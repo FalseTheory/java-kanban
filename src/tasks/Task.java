@@ -20,6 +20,8 @@ public class Task {
 
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -35,5 +37,26 @@ public class Task {
 
     public long getId() {
         return id;
+    }
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
