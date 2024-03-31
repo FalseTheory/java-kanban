@@ -1,17 +1,18 @@
 package tasks;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Epic extends Task{
 
-    private HashMap<Long,Subtask> subTasksList;
+    private ArrayList<Subtask> subTasksList;
 
     public Epic(String name, String description){
         super(name,description);
-        subTasksList = new HashMap<>();
+        subTasksList = new ArrayList<>();
     }
     public void addTask(Subtask subtask){
-        subTasksList.put(subtask.getId(), subtask);
+        subTasksList.add(subtask);
     }
 
     @Override
@@ -19,12 +20,13 @@ public class Epic extends Task{
         return "Epic{" +
                 "name="+super.getName() +
                 ", description=" + super.getDescription() +
+                ", id=" + super.getId() +
                 ", status=" + super.getStatus() +
                 ", subTasksList=" + subTasksList +
                 '}';
     }
 
-    public HashMap<Long, Subtask> getSubTasksList() {
+    public ArrayList<Subtask> getSubTasksList() {
         return subTasksList;
     }
 }

@@ -18,8 +18,9 @@ public class Subtask extends Task{
         return "SubTask{" +
                 "name=" + super.getName() +
                 ", description=" + super.getDescription() +
-                ", mainTask="+mainTask.getName() +
+                ", id=" + super.getId() +
                 ", status="+super.getStatus() +
+                ", mainTaskId="+mainTask.getId() +
                 '}';
     }
 }
