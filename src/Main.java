@@ -1,28 +1,57 @@
-import managers.TaskManager;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import service.TaskManager;
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
-        Task task1 = new Task("Построить дом", "Проверка");
-        Task task2 = new Task("Построить забор", "Проверка");
 
-        Epic epicTask1 = new Epic("Мега дом", "Процесс пошел");
-        Subtask sub2 = new Subtask("Взять дерево", "Нарубить",epicTask1);
-        Subtask sub3 = new Subtask("Взять деревья", "Нарубить дров",epicTask1);
-        Epic epicTask2 = new Epic("Мега дом", "Процесс пошел");
-        Subtask sub4 = new Subtask("Взять дерево", "Нарубить",epicTask2);
-        Subtask sub5 = new Subtask("Взять деревья", "Нарубить дров",epicTask2);
-        taskManager.createEpic(epicTask1);
-        taskManager.createSubTask(sub2);
-        taskManager.createSubTask(sub3);
-        taskManager.createEpic(epicTask2);
-        taskManager.createSubTask(sub4);
-        taskManager.createSubTask(sub5);
-        taskManager.printAllTasks();
-        System.out.println(epicTask1.equals(epicTask1));
+
+        //тесты
+
+        //обычная задача
+        TaskManager taskManager = new TaskManager();
+
+        Task task = taskManager.createSimpleTask(new Task("Тестовая задача","Описание",TaskStatus.NEW));
+        System.out.println("Created task: " + task);
+
+        Task taskFrom = taskManager.getTaskById(task.getId());
+
+        Task updated = new Task("Обновлённая задача", "Новое описание", TaskStatus.IN_PROGRESS,taskFrom.getId());
+        taskManager.updateTask(updated);
+        System.out.println("Updated task: "+taskManager.getTaskById(task.getId()));
+
+        taskManager.removeTask(taskFrom.getId());
+        System.out.println("Removed task: " + task);
+
+        //эпики и подзадачи
+        Epic epic1 = new Epic("Эпик1", "Описание");
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1,TaskStatus.NEW);
+        System.out.println("Создание эпика");
+        System.out.println(taskManager.createEpic(epic1));
+        System.out.println(taskManager.createSubTask(subtask1));
+        System.out.println(taskManager.getEpic(epic1.getId()));
+
+        System.out.println("Изменение подзадачи и статуса эпика");
+        taskManager.updateSubTask(new Subtask("Подзадача1 изменённая","Описание new",subtask1.getEpic(),TaskStatus.DONE, subtask1.getId()));
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getSubtasks());
+
+        //проверка рассчёта статуса
+        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание",epic1,TaskStatus.NEW));
+        System.out.println(taskManager.getEpic(epic1.getId()));
+        //Подзадачи эпика
+        System.out.println("Подзадачи эпика: " + taskManager.getSubtasksForEpic(epic1.getId()));
+
+        taskManager.clearAll();
+
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getTasks());
+        System.out.println(taskManager.getSubtasks());
+
+
+
     }
 }
