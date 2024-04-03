@@ -1,15 +1,16 @@
 package model;
 
-public class Subtask extends Task{
+public class Subtask extends Task {
 
     private Epic epic;
 
-    public Subtask(String name, String description,Epic epic,TaskStatus status){
-        super(name, description,status);
+    public Subtask(String name, String description, Epic epic, TaskStatus status) {
+        super(name, description, status);
         this.epic = epic;
     }
-    public Subtask(String name, String description, Epic epic, TaskStatus status, long id){
-        super(name,description,status,id);
+
+    public Subtask(String name, String description, Epic epic, TaskStatus status, long id) {
+        super(name, description, status, id);
         this.epic = epic;
     }
 
@@ -20,8 +21,8 @@ public class Subtask extends Task{
                 "name=" + super.getName() +
                 ", description=" + super.getDescription() +
                 ", id=" + super.getId() +
-                ", status="+super.getStatus() +
-                ", mainTaskId="+ epic.getId() +
+                ", status=" + super.getStatus() +
+                ", mainTaskId=" + epic.getId() +
                 '}';
     }
 
@@ -33,7 +34,8 @@ public class Subtask extends Task{
     public void setEpic(Epic epic) {
         this.epic = epic;
     }
-    public Epic getEpic(){
+
+    public Epic getEpic() {
         return epic;
     }
 }

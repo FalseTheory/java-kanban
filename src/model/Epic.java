@@ -1,36 +1,36 @@
 package model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
-    private final Set<Subtask> subTasksList; //set
+    private final List<Subtask> subTasksList;
 
 
-    public Epic(String name, String description){
-        super(name,description,null);
-        subTasksList = new HashSet<>();
+    public Epic(String name, String description) {
+        super(name, description, null);
+        subTasksList = new ArrayList<>();
     }
-    public Epic(String name, String description, long id){
-        this(name,description);
+
+    public Epic(String name, String description, long id) {
+        this(name, description);
         super.setId(id);
     }
-    public void addTask(Subtask subtask){
+
+    public void addTask(Subtask subtask) {
         subTasksList.add(subtask);
     }
-    public void removeTask(Subtask subtask){
-        for(Subtask subtask1 : subTasksList){
-            if(subtask1.equals(subtask)){
-                subTasksList.remove(subtask1);
-            }
-        }
+
+    public void removeTask(Subtask subtask) {
+        subTasksList.removeIf(subtask1 -> subtask1.equals(subtask));
 
     }
+
     @Override
     public String toString() {
         return "Epic{" +
-                "name="+super.getName() +
+                "name=" + super.getName() +
                 ", description=" + super.getDescription() +
                 ", id=" + super.getId() +
                 ", status=" + super.getStatus() +
@@ -38,7 +38,7 @@ public class Epic extends Task{
                 '}';
     }
 
-    public Set<Subtask> getSubTasksList() {
+    public List<Subtask> getSubTasksList() {
         return subTasksList;
     }
 
