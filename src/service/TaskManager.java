@@ -25,7 +25,7 @@ public interface TaskManager {
 
     Subtask createSubTask(Subtask subtask);
 
-    Task createSimpleTask(Task task);
+    Task createTask(Task task);
 
     void removeTask(Long id);
 

@@ -1,7 +1,6 @@
 package service;
 
 
-import com.sun.source.tree.AssertTree;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -35,7 +34,7 @@ public class TaskManagerTest {
         Epic epic1 = new Epic("Эпик 1", "Описание");
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
 
-        taskManager.createSimpleTask(task1);
+        taskManager.createTask(task1);
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subtask1);
 
@@ -46,13 +45,28 @@ public class TaskManagerTest {
 
     @Test
     @DisplayName("Мапы каждого типа задач должны корректно удалть элементы по id")
-    public void tasksListsShouldCorrectlyRemoveElementsById() {
+    public void shouldCorrectlyRemoveElementsByIdForEveryMap() {
         Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+        Epic epic1 = new Epic("Эпик 1", "Описание");
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
 
-        taskManager.createSimpleTask(task1);
+
+        taskManager.createTask(task1);
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subtask1);
         assertFalse(taskManager.getTasks().isEmpty());
+        assertFalse(taskManager.getEpics().isEmpty());
+        assertFalse(taskManager.getSubtasks().isEmpty());
+
         taskManager.removeTask(task1.getId());
+        taskManager.removeSubTask(subtask1.getId());
+        taskManager.removeEpicTask(epic1.getId());
         assertTrue(taskManager.getTasks().isEmpty());
+        assertTrue(taskManager.getSubtasks().isEmpty());
+        assertTrue(taskManager.getEpics().isEmpty());
+
+
+
     }
 
     @Test
@@ -91,7 +105,7 @@ public class TaskManagerTest {
 
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subtask1);
-        taskManager.createSimpleTask(task1);
+        taskManager.createTask(task1);
 
         Epic epicUpdate = new Epic("Эпик", "Описание эпик", epic1.getId());
         Subtask subtaskUpdate = new Subtask("Подзадача", "Описание саб", epic1, TaskStatus.IN_PROGRESS, subtask1.getId());

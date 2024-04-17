@@ -84,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task createSimpleTask(Task task) {
+    public Task createTask(Task task) {
         task.setId(generateId());
         tasks.put(task.getId(), task);
 
