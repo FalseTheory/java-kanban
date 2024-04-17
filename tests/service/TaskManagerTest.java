@@ -10,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,15 +124,43 @@ public class TaskManagerTest {
         taskManager.updateSubTask(subtaskUpdate);
         Subtask subtaskFromManager = taskManager.getSubTask(subtaskUpdate.getId());
         assertEquals(subtaskUpdate, subtaskFromManager);
-        assertEquals("Подзадача", subtaskFromManager.getName()); //отдельная проверка полей, поскольку equals по заданию проверяет только id
+        assertEquals("Подзадача", subtaskFromManager.getName());
         assertEquals("Описание саб", subtaskFromManager.getDescription());
         assertEquals(TaskStatus.IN_PROGRESS, subtaskFromManager.getStatus());
 
         taskManager.updateEpic(epicUpdate);
         Epic epicFromManager = taskManager.getEpic(epicUpdate.getId());
         assertEquals(epicUpdate, epicFromManager);
-        assertEquals("Эпик", epicFromManager.getName()); //отдельная проверка полей, поскольку equals по заданию проверяет только id
+        assertEquals("Эпик", epicFromManager.getName());
         assertEquals("Описание эпик", epicFromManager.getDescription());
+
+    }
+
+    @Test
+    @DisplayName("История должна записываться при обращению к любому виду задач")
+    public void shouldRecordHistoryForTaskOfAnyType(){
+        Epic epic1 = new Epic("Эпик 1", "Описание");
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subtask1);
+        taskManager.createTask(task1);
+
+        assertTrue(taskManager.getHistory().isEmpty(),"История должна быть пустой при инициализации");
+
+        taskManager.getEpic(epic1.getId());
+        taskManager.getTask(task1.getId());
+        taskManager.getSubTask(subtask1.getId());
+
+        List<Task> expectedList = new ArrayList<>();
+        expectedList.add(epic1);
+        expectedList.add(task1);
+        expectedList.add(subtask1);
+
+
+        assertEquals(expectedList,taskManager.getHistory());
+
 
     }
 

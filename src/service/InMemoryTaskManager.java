@@ -8,15 +8,16 @@ import model.TaskStatus;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
     private long count = 0;
 
     private final HistoryManager historyManager;
-    private final HashMap<Long, Task> tasks;
-    private final HashMap<Long, Subtask> subtasks;
-    private final HashMap<Long, Epic> epics;
+    private final Map<Long, Task> tasks;
+    private final Map<Long, Subtask> subtasks;
+    private final Map<Long, Epic> epics;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -186,6 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
+    @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }
@@ -196,17 +198,17 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     @Override
-    public HashMap<Long, Subtask> getSubtasks() {
+    public Map<Long, Subtask> getSubtasks() {
         return subtasks;
     }
 
     @Override
-    public HashMap<Long, Task> getTasks() {
+    public Map<Long, Task> getTasks() {
         return tasks;
     }
 
     @Override
-    public HashMap<Long, Epic> getEpics() {
+    public Map<Long, Epic> getEpics() {
         return epics;
     }
 

@@ -8,9 +8,8 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @DisplayName("Менеджер истории")
 public class HistoryManagerTest {
@@ -26,10 +25,10 @@ public class HistoryManagerTest {
     @Test
     public void shouldCorrectlyRecordHistory() {
 
-        assertTrue(historyManager.getHistory().isEmpty());
+        assertTrue(historyManager.getHistory().isEmpty(),"История должна быть пустой при инициализации");
         historyManager.add(new Task("Задача", "Описание", TaskStatus.NEW));
 
-        assertEquals(1, historyManager.getHistory().size());
+        assertEquals(1, historyManager.getHistory().size(),"Размер истории не соответствует ожидаемому");
 
     }
 
@@ -45,8 +44,8 @@ public class HistoryManagerTest {
         Task task1 = new Task("Проверочная задача", "Описание 1", TaskStatus.DONE);
         historyManager.add(task1);
 
-        assertEquals(10, historyManager.getHistory().size());
-        assertEquals(historyManager.getHistory().getLast(), task1);
+        assertEquals(10, historyManager.getHistory().size(),"Размер истории не совпадает с ожидаемым");
+        assertEquals(historyManager.getHistory().getLast(), task1,"Новая задача должна добавляться в конец списка");
 
     }
 
