@@ -7,6 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,24 +34,67 @@ public class HistoryManagerTest {
 
         assertEquals(1, historyManager.getHistory().size(),"Размер истории не соответствует ожидаемому");
 
-    }
 
-    @DisplayName("Размер истории не должен превышать 10")
+    }
+    @DisplayName("История должна корректно работать с дубликатами задач")
     @Test
-    public void historySizeMustNotBeHigherThan10() {
+    public void shouldCorrectlyWorkWithDuplicates(){
 
-        for (int i = 0; i <= 9; i++) {
-            historyManager.add(new Task("Задача", "Описание", TaskStatus.NEW));
-        }
-        assertEquals(10, historyManager.getHistory().size());
-
-        Task task1 = new Task("Проверочная задача", "Описание 1", TaskStatus.DONE);
+        Task task1 = new Task("Задача", "Описание", TaskStatus.NEW,1L);
+        Task task2 = new Task("Задача", "Описание", TaskStatus.NEW,2L);
+        ArrayList<Task> expectedList = new ArrayList<>(List.of(task2,task1));
         historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task1);
+        assertEquals(expectedList,historyManager.getHistory());
 
-        assertEquals(10, historyManager.getHistory().size(),"Размер истории не совпадает с ожидаемым");
-        assertEquals(historyManager.getHistory().getLast(), task1,"Новая задача должна добавляться в конец списка");
 
     }
+
+    @DisplayName("Должен корректно удалять задачу из истории по id")
+    @Test
+    public void shouldCorrectlyRemoveTaskFromHistoryById(){
+        Task task1 = new Task("Задача", "Описание", TaskStatus.NEW,1L);
+        Task task2 = new Task("Задача", "Описание", TaskStatus.NEW,2L);
+        Task task3 = new Task("Задача", "Описание", TaskStatus.NEW,3L);
+        Task task4 = new Task("Задача", "Описание", TaskStatus.NEW,4L);
+        Task task5 = new Task("Задача", "Описание", TaskStatus.NEW,5L);
+        Task task6 = new Task("Задача", "Описание", TaskStatus.NEW,6L);
+
+        ArrayList<Task> expectedList = new ArrayList<>(List.of(task1,task2,task4,task5,task6));
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+        historyManager.add(task4);
+        historyManager.add(task5);
+        historyManager.add(task6);
+        System.out.println(historyManager.getHistory());
+
+        historyManager.remove(3L);
+        System.out.println(historyManager.getHistory());
+
+        assertEquals(expectedList,historyManager.getHistory());
+
+    }
+    @DisplayName("Должен корректно работать если список состоит из одной задачи")
+    @Test
+    public void shouldWorkWhenListContainOneElement(){
+
+        Task task1 = new Task("Задача", "Описание", TaskStatus.NEW,1L);
+        ArrayList<Task> expectedList = new ArrayList<>(Collections.singletonList(task1));
+
+        historyManager.add(task1);
+        assertEquals(expectedList,historyManager.getHistory());
+
+        historyManager.add(task1);
+        assertEquals(expectedList,historyManager.getHistory());
+
+        historyManager.remove(1L);
+        assertEquals(Collections.emptyList(),historyManager.getHistory());
+    }
+
+
 
 
 }

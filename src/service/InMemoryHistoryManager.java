@@ -1,28 +1,83 @@
 package service;
 
 import model.Task;
+import utils.Node;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
     private final List<Task> history;
+    private final Map<Long, Node<Task>> links;
+    private Node<Task> head;
+    private Node<Task> tail;
+
+    private int size = 0;
 
     public InMemoryHistoryManager() {
         history = new ArrayList<>();
+        links = new HashMap<>();
+
     }
 
     @Override
     public List<Task> getHistory() {
-        return history;
+        return getTasks();
     }
 
     @Override
     public <T extends Task> void add(T task) {
-        if (history.size() == 10) {
-            history.removeFirst();
+        linkLast(task);
+    }
+
+    @Override
+    public void remove(long id) {
+        removeNode(links.get(id));
+    }
+
+    private ArrayList<Task> getTasks() {
+        ArrayList<Task> returnList = new ArrayList<>();
+        Node<Task> p = head;
+        while (p != null) {
+            returnList.add(p.data);
+            p = p.next;
         }
-        history.add(task);
+        return returnList;
+    }
+
+    private void linkLast(Task task) {
+        if (links.containsKey(task.getId())) {
+            remove(task.getId());
+        }
+        final Node<Task> oldTail = tail;
+        final Node<Task> newTail = new Node<>(oldTail, task, null);
+
+        tail = newTail;
+        if (oldTail == null) {
+            head = newTail;
+        } else {
+            oldTail.next = newTail;
+        }
+        links.put(task.getId(), newTail);
+        size++;
+    }
+
+    private void removeNode(Node<Task> node) {
+        links.remove(node.data.getId());
+        if(head==tail){
+            head=null;
+            tail=null;
+        }
+        else if (node == tail) {
+            tail = node.prev;
+            node = null;
+        } else if (node == head) {
+            head = node.next;
+        } else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+
     }
 }
