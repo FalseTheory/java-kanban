@@ -65,11 +65,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void removeNode(Node<Task> node) {
         links.remove(node.data.getId());
-        if(head==tail){
-            head=null;
-            tail=null;
-        }
-        else if (node == tail) {
+        if (head == tail) {
+            head = null;
+            tail = null;
+        } else if (node == tail) {
             tail = node.prev;
             node = null;
         } else if (node == head) {
