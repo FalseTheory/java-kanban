@@ -47,8 +47,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    @DisplayName("Мапы каждого типа задач должны корректно удалть элементы по id")
-    public void shouldCorrectlyRemoveElementsByIdForEveryMap() {
+    @DisplayName("Мапы каждого типа задач должны корректно удалять элементы по id из мапов и истории")
+    public void shouldCorrectlyRemoveElementsByIdForEveryMapAndHistory() {
         Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
         Epic epic1 = new Epic("Эпик 1", "Описание");
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
@@ -61,12 +61,18 @@ public class TaskManagerTest {
         assertFalse(taskManager.getEpics().isEmpty());
         assertFalse(taskManager.getSubtasks().isEmpty());
 
+        taskManager.getTask(1L);
+        taskManager.getEpic(2L);
+        taskManager.getSubTask(3L);
+        assertEquals(taskManager.getHistory().size(),3,"История неверно заполняется");
+
         taskManager.removeTask(task1.getId());
         taskManager.removeSubTask(subtask1.getId());
         taskManager.removeEpicTask(epic1.getId());
         assertTrue(taskManager.getTasks().isEmpty());
         assertTrue(taskManager.getSubtasks().isEmpty());
         assertTrue(taskManager.getEpics().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty(),"История не должна хранить удалённые задачи");
 
 
 
