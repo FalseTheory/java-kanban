@@ -70,6 +70,7 @@ public class HistoryManagerTest {
         historyManager.add(task4);
         historyManager.add(task5);
         historyManager.add(task6);
+
         System.out.println(historyManager.getHistory());
 
         historyManager.remove(3L);
@@ -94,6 +95,44 @@ public class HistoryManagerTest {
 
         historyManager.remove(1L);
         assertEquals(Collections.emptyList(), historyManager.getHistory());
+    }
+    @DisplayName("Задачи из головы истории должны корректно удаляться")
+    @Test
+    public void shouldCorrectlyRemoveTaskFromHead(){
+        Task task1 = new Task("Задача", "Описание", TaskStatus.NEW, 1L);
+        Task task2 = new Task("Задача", "Описание", TaskStatus.NEW, 2L);
+        Task task3 = new Task("Задача", "Описание", TaskStatus.NEW, 3L);
+
+
+        ArrayList<Task> expectedList = new ArrayList<>(List.of(task2, task3));
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(1L);
+
+        assertEquals(expectedList,historyManager.getHistory(),"Задача из головы истории не удаляется корректно");
+
+    }
+    @DisplayName("Задачи из Хвоста истории должны корректно удаляться")
+    @Test
+    public void shouldCorrectlyRemoveTaskFromTail(){
+        Task task1 = new Task("Задача", "Описание", TaskStatus.NEW, 1L);
+        Task task2 = new Task("Задача", "Описание", TaskStatus.NEW, 2L);
+        Task task3 = new Task("Задача", "Описание", TaskStatus.NEW, 3L);
+
+
+        ArrayList<Task> expectedList = new ArrayList<>(List.of(task1, task2));
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(3L);
+
+        assertEquals(expectedList, historyManager.getHistory(),"Задача из хвоста истории не удаляется корректно");
+
     }
 
 
