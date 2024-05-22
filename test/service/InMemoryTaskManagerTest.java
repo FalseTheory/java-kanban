@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("Менеджер задач")
-public class TaskManagerTest {
+public class InMemoryTaskManagerTest {
 
 
     private static TaskManager taskManager;
 
     @BeforeEach
     public void beforeEach() {
-        taskManager = Managers.getDefault();
+        taskManager = Managers.getInMemoryManager();
     }
 
 

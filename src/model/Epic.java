@@ -27,6 +27,7 @@ public class Epic extends Task {
 
     }
 
+
     @Override
     public String toString() {
         return "Epic{" +
@@ -40,6 +41,11 @@ public class Epic extends Task {
 
     public List<Subtask> getSubTasksList() {
         return subTasksList;
+    }
+
+    @Override
+    public TaskType getType(){
+        return TaskType.EPIC;
     }
 
 

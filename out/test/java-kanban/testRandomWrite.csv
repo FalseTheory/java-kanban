@@ -1,0 +1,8 @@
+id,type,name,status,description,epic
+7,SUBTASK,Подзадача 3,IN_PROGRESS,Описание,3
+1,TASK,Поесть,NEW,Описание,null
+4,EPIC,Не пустой эпик,NEW,Описание,null
+5,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,3
+6,SUBTASK,Подзадача 2,IN_PROGRESS,Описание,3
+2,TASK,Нарисовать дом,NEW,Описание,null
+3,EPIC,Пустой эпик,IN_PROGRESS,Пустота,null

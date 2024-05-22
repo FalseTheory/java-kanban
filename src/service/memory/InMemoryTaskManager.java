@@ -1,9 +1,12 @@
-package service;
+package service.memory;
 
+import exception.NotFoundException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
+import service.HistoryManager;
+import service.TaskManager;
 
 
 import java.util.HashMap;
@@ -12,12 +15,12 @@ import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private long count = 0;
+    protected long count = 0;
 
-    private final HistoryManager historyManager;
-    private final Map<Long, Task> tasks;
-    private final Map<Long, Subtask> subtasks;
-    private final Map<Long, Epic> epics;
+    protected final HistoryManager historyManager;
+    protected final Map<Long, Task> tasks;
+    protected final Map<Long, Subtask> subtasks;
+    protected final Map<Long, Epic> epics;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -138,6 +141,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubTask(Subtask subtask) {
         if (subtasks.containsKey(subtask.getId())) {
             Epic tempEpic = subtask.getEpic();
+            if(epics.get(tempEpic.getId())==null){
+                throw new NotFoundException("Не найден эпик по id: " + tempEpic.getId());
+            }
             tempEpic.removeTask(subtask);
             tempEpic.addTask(subtask);
             subtasks.put(subtask.getId(), subtask);

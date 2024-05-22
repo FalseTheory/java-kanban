@@ -5,6 +5,9 @@ import model.Task;
 import model.TaskStatus;
 import service.Managers;
 import service.TaskManager;
+import service.file.FileBackedTaskManager;
+
+import java.io.File;
 
 
 public class Main {
@@ -32,5 +35,9 @@ public class Main {
         taskManager.getSubTask(6L);
         taskManager.getTask(1L);
         System.out.println(taskManager.getHistory());
+
+        TaskManager restoredManager = FileBackedTaskManager.loadFromFile(new File("resources/task.csv"));
+
+
     }
 }
