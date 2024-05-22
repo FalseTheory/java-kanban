@@ -64,7 +64,7 @@ public class InMemoryTaskManagerTest {
         taskManager.getTask(1L);
         taskManager.getEpic(2L);
         taskManager.getSubTask(3L);
-        assertEquals(taskManager.getHistory().size(),3,"История неверно заполняется");
+        assertEquals(taskManager.getHistory().size(), 3, "История неверно заполняется");
 
         taskManager.removeTask(task1.getId());
         taskManager.removeSubTask(subtask1.getId());
@@ -72,8 +72,7 @@ public class InMemoryTaskManagerTest {
         assertTrue(taskManager.getTasks().isEmpty());
         assertTrue(taskManager.getSubtasks().isEmpty());
         assertTrue(taskManager.getEpics().isEmpty());
-        assertTrue(taskManager.getHistory().isEmpty(),"История не должна хранить удалённые задачи");
-
+        assertTrue(taskManager.getHistory().isEmpty(), "История не должна хранить удалённые задачи");
 
 
     }
@@ -144,7 +143,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("История должна записываться при обращению к любому виду задач")
-    public void shouldRecordHistoryForTaskOfAnyType(){
+    public void shouldRecordHistoryForTaskOfAnyType() {
         Epic epic1 = new Epic("Эпик 1", "Описание");
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
         Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
@@ -153,7 +152,7 @@ public class InMemoryTaskManagerTest {
         taskManager.createSubTask(subtask1);
         taskManager.createTask(task1);
 
-        assertTrue(taskManager.getHistory().isEmpty(),"История должна быть пустой при инициализации");
+        assertTrue(taskManager.getHistory().isEmpty(), "История должна быть пустой при инициализации");
 
         taskManager.getEpic(epic1.getId());
         taskManager.getTask(task1.getId());
@@ -165,7 +164,7 @@ public class InMemoryTaskManagerTest {
         expectedList.add(subtask1);
 
 
-        assertEquals(expectedList,taskManager.getHistory());
+        assertEquals(expectedList, taskManager.getHistory());
 
 
     }

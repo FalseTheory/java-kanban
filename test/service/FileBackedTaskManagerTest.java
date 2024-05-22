@@ -7,7 +7,9 @@ import model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import service.file.FileBackedTaskManager;
 
 import java.io.IOException;
@@ -37,15 +39,15 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Менеджер должен корректно восстанавливаться из файла") // Тест также реализует дополнительное задание (Сценарий использования)
-    public void managerShouldBeCorrectlyRestoredFromFile(){
+    @DisplayName("Менеджер должен корректно восстанавливаться из файла")
+    // Тест также реализует дополнительное задание (Сценарий использования)
+    public void managerShouldBeCorrectlyRestoredFromFile() {
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/test1.csv"));
 
 
-
-        assertEquals(taskManager.getEpics(),manager.getEpics());
-        assertEquals(taskManager.getTasks(),manager.getTasks());
-        assertEquals(taskManager.getSubtasks(),manager.getSubtasks());
+        assertEquals(taskManager.getEpics(), manager.getEpics());
+        assertEquals(taskManager.getTasks(), manager.getTasks());
+        assertEquals(taskManager.getSubtasks(), manager.getSubtasks());
 
         List<Subtask> expectedSubTasks4 = taskManager.getEpic(4L).getSubTasksList();
         List<Subtask> expectedSubTasks3 = taskManager.getEpic(3L).getSubTasksList();
@@ -60,25 +62,22 @@ public class FileBackedTaskManagerTest {
         actualSubTasks4.sort(new SubtaskComparator());
 
 
-        assertEquals(expectedSubTasks4,actualSubTasks4);
-        assertEquals(expectedSubTasks3,actualSubTasks3);
-
-
-
+        assertEquals(expectedSubTasks4, actualSubTasks4);
+        assertEquals(expectedSubTasks3, actualSubTasks3);
 
 
     }
+
     @Test
     @DisplayName("Менеджер должен корректно восстанавливаться из файла с рандомно расположенными записями")
-    public void managerShouldBeCorrectlyRestoredFromRandomFile(){
+    public void managerShouldBeCorrectlyRestoredFromRandomFile() {
         FileBackedTaskManager manager =
                 FileBackedTaskManager.loadFromFile(new File("testResources/testRandomWrite.csv"));
 
 
-
-        assertEquals(taskManager.getEpics(),manager.getEpics());
-        assertEquals(taskManager.getTasks(),manager.getTasks());
-        assertEquals(taskManager.getSubtasks(),manager.getSubtasks());
+        assertEquals(taskManager.getEpics(), manager.getEpics());
+        assertEquals(taskManager.getTasks(), manager.getTasks());
+        assertEquals(taskManager.getSubtasks(), manager.getSubtasks());
 
         List<Subtask> expectedSubTasks4 = taskManager.getEpic(4L).getSubTasksList();
         List<Subtask> expectedSubTasks3 = taskManager.getEpic(3L).getSubTasksList();
@@ -94,15 +93,15 @@ public class FileBackedTaskManagerTest {
         actualSubTasks4.sort(new SubtaskComparator());
 
 
-        assertEquals(expectedSubTasks4,actualSubTasks4);
-        assertEquals(expectedSubTasks3,actualSubTasks3);
+        assertEquals(expectedSubTasks4, actualSubTasks4);
+        assertEquals(expectedSubTasks3, actualSubTasks3);
     }
 
     @Test
     @DisplayName("Менеджер должен корректно создаваться из пустого файла")
     public void managerShouldBeProperlyCreatedFromEmptyFile() throws IOException {
 
-        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(File.createTempFile("testEmpty",".csv"));
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(File.createTempFile("testEmpty", ".csv"));
 
         assertTrue(manager.getTasks().isEmpty());
         assertTrue(manager.getEpics().isEmpty());
@@ -111,11 +110,9 @@ public class FileBackedTaskManagerTest {
     }
 
 
-
-
     private static class SubtaskComparator implements Comparator<Subtask> {
         @Override
-        public int compare(Subtask s1, Subtask s2){
+        public int compare(Subtask s1, Subtask s2) {
             return Long.compare(s1.getId(), s2.getId());
         }
     }

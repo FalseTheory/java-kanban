@@ -96,9 +96,10 @@ public class HistoryManagerTest {
         historyManager.remove(1L);
         assertEquals(Collections.emptyList(), historyManager.getHistory());
     }
+
     @DisplayName("Задачи из головы истории должны корректно удаляться")
     @Test
-    public void shouldCorrectlyRemoveTaskFromHead(){
+    public void shouldCorrectlyRemoveTaskFromHead() {
         Task task1 = new Task("Задача", "Описание", TaskStatus.NEW, 1L);
         Task task2 = new Task("Задача", "Описание", TaskStatus.NEW, 2L);
         Task task3 = new Task("Задача", "Описание", TaskStatus.NEW, 3L);
@@ -112,12 +113,13 @@ public class HistoryManagerTest {
 
         historyManager.remove(1L);
 
-        assertEquals(expectedList,historyManager.getHistory(),"Задача из головы истории не удаляется корректно");
+        assertEquals(expectedList, historyManager.getHistory(), "Задача из головы истории не удаляется корректно");
 
     }
+
     @DisplayName("Задачи из Хвоста истории должны корректно удаляться")
     @Test
-    public void shouldCorrectlyRemoveTaskFromTail(){
+    public void shouldCorrectlyRemoveTaskFromTail() {
         Task task1 = new Task("Задача", "Описание", TaskStatus.NEW, 1L);
         Task task2 = new Task("Задача", "Описание", TaskStatus.NEW, 2L);
         Task task3 = new Task("Задача", "Описание", TaskStatus.NEW, 3L);
@@ -131,7 +133,7 @@ public class HistoryManagerTest {
 
         historyManager.remove(3L);
 
-        assertEquals(expectedList, historyManager.getHistory(),"Задача из хвоста истории не удаляется корректно");
+        assertEquals(expectedList, historyManager.getHistory(), "Задача из хвоста истории не удаляется корректно");
 
     }
 

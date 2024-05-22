@@ -77,11 +77,11 @@ public class Task {
                 '}';
     }
 
-    public Epic getEpic(){
+    public Epic getEpic() {
         return null;
     }
 
-    public TaskType getType(){
+    public TaskType getType() {
         return TaskType.TASK;
     }
 
