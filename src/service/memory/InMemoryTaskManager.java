@@ -8,7 +8,6 @@ import model.TaskStatus;
 import service.HistoryManager;
 import service.TaskManager;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubTask(Subtask subtask) {
         if (subtasks.containsKey(subtask.getId())) {
             Epic tempEpic = subtask.getEpic();
-            if(epics.get(tempEpic.getId())==null){
+            if (epics.get(tempEpic.getId()) == null) {
                 throw new NotFoundException("Не найден эпик по id: " + tempEpic.getId());
             }
             tempEpic.removeTask(subtask);
