@@ -1,5 +1,6 @@
 package service;
 
+import exception.ManagerSaveException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -7,16 +8,17 @@ import model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import service.file.FileBackedTaskManager;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileBackedTaskManagerTest {
 
@@ -40,10 +42,9 @@ public class FileBackedTaskManagerTest {
 
     @Test
     @DisplayName("Менеджер должен корректно восстанавливаться из файла")
-    // Тест также реализует дополнительное задание (Сценарий использования)
+
     public void managerShouldBeCorrectlyRestoredFromFile() {
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/test1.csv"));
-
 
         assertEquals(taskManager.getEpics(), manager.getEpics());
         assertEquals(taskManager.getTasks(), manager.getTasks());
@@ -106,6 +107,55 @@ public class FileBackedTaskManagerTest {
         assertTrue(manager.getTasks().isEmpty());
         assertTrue(manager.getEpics().isEmpty());
         assertTrue(manager.getSubtasks().isEmpty());
+
+    }
+
+    @Test
+    @DisplayName("Файл должен корректно записывать задачу")
+    public void managerShouldCorrectlySaveTasksToFile() throws IOException {
+        File file = File.createTempFile("testWrite", ".csv");
+
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
+
+        manager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW));
+
+
+        try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            bReader.readLine();
+
+            String line = bReader.readLine();
+            assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
+
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+        }
+
+    }
+
+    @Test
+    @DisplayName("Файл должен корректно записывать Эпик и подзадачи")
+    public void managerShouldCorrectlySaveEpicToFile() throws IOException {
+        File file = File.createTempFile("testWrite", ".csv");
+
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
+
+        manager.createEpic(new Epic("Не пустой эпик", "Описание"));
+
+        manager.createSubTask(new Subtask("Подзадача 1", "Описание", manager.getEpic(1L), TaskStatus.IN_PROGRESS));
+
+
+        try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            bReader.readLine();
+
+            String line = bReader.readLine();
+            String line2 = bReader.readLine();
+
+            assertEquals("1,EPIC,Не пустой эпик,IN_PROGRESS,Описание,null", line);
+            assertEquals("2,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,1", line2);
+
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+        }
 
     }
 
