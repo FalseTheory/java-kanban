@@ -127,9 +127,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    @Override
+    public void clearAllTasks() {
+        super.clearAllTasks();
+        save();
+    }
+
+    @Override
+    public void clearAllEpics() {
+        super.clearAllEpics();
+        save();
+    }
+
+    @Override
+    public void clearAllSubtasks() {
+        super.clearAllSubtasks();
+        save();
+    }
+
     public static FileBackedTaskManager loadFromFile(File file) {
 
-        long countCurrent = -1;
+        long countCurrent = 0;
         List<Subtask> subtaskList = new ArrayList<>();
         FileBackedTaskManager newManager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
 
@@ -178,7 +196,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
         } finally {
-            newManager.count = countCurrent + 1;
+            newManager.count = countCurrent;
         }
 
         return newManager;

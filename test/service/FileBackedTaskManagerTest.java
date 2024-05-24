@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest {
 
@@ -152,6 +151,40 @@ public class FileBackedTaskManagerTest {
 
             assertEquals("1,EPIC,Не пустой эпик,IN_PROGRESS,Описание,null", line);
             assertEquals("2,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,1", line2);
+
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+        }
+
+
+    }
+
+    @Test
+    @DisplayName("Удаление должно отражаться в файле")
+    public void deletionShouldBeCorrectlyHandled() throws IOException {
+
+        File file = File.createTempFile("testDeletion", ".csv");
+
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
+
+        manager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW));
+
+        try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            bReader.readLine();
+
+            String line = bReader.readLine();
+            assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
+
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+        }
+
+        manager.removeTask(1L);
+        try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            bReader.readLine();
+
+            String line = bReader.readLine();
+            assertNull(line);
 
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
