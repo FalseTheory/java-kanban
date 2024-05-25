@@ -76,13 +76,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             epicId = task.getEpic().getId();
         }
-        return String.format("%d,%s,%s,%s,%s,%d\n", task.getId(), task.getType().name(), task.getName(),
-                task.getStatus().name(), task.getDescription(), epicId);
+        return String.format("%d,%s,%s,%s,%s,%d\n",
+                task.getId(),
+                task.getType().name(),
+                task.getName(),
+                task.getStatus().name(),
+                task.getDescription(),
+                epicId);
     }
 
     @Override
     public Task createTask(Task task) {
-
         Task createdTask = super.createTask(task);
         save();
         return createdTask;
@@ -90,7 +94,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Epic createEpic(Epic epic) {
-
         Epic createdEpic = super.createEpic(epic);
         save();
         return createdEpic;
@@ -228,7 +231,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
             }
-            for (Subtask task : subtaskList) { // чтобы создание работало при любом порядке задач в файлах
+            for (Subtask task : subtaskList) {
                 Epic epic = newManager.getEpic(task.getEpic().getId());
                 task.setEpic(epic);
                 epic.addTask(task);
