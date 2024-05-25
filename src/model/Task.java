@@ -53,6 +53,7 @@ public class Task {
         this.name = name;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +75,14 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 '}';
+    }
+
+    public Epic getEpic() {
+        return null;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
 

@@ -14,6 +14,10 @@ public class Subtask extends Task {
         this.epic = epic;
     }
 
+    public Subtask(String name, String description, TaskStatus status, long id) {
+        super(name, description, status, id);
+    }
+
 
     @Override
     public String toString() {
@@ -26,6 +30,7 @@ public class Subtask extends Task {
                 '}';
     }
 
+
     @Override
     public void setStatus(TaskStatus status) {
         super.setStatus(status);
@@ -35,7 +40,15 @@ public class Subtask extends Task {
         this.epic = epic;
     }
 
+    @Override
     public Epic getEpic() {
         return epic;
     }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
+
+
 }
