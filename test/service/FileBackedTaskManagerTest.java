@@ -45,6 +45,7 @@ public class FileBackedTaskManagerTest {
     public void managerShouldBeCorrectlyRestoredFromFile() {
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/test1.csv"));
 
+
         assertEquals(taskManager.getEpics(), manager.getEpics());
         assertEquals(taskManager.getTasks(), manager.getTasks());
         assertEquals(taskManager.getSubtasks(), manager.getSubtasks());
@@ -121,6 +122,7 @@ public class FileBackedTaskManagerTest {
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
             bReader.readLine();
+            bReader.readLine();
 
             String line = bReader.readLine();
             assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
@@ -144,6 +146,7 @@ public class FileBackedTaskManagerTest {
 
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            bReader.readLine();
             bReader.readLine();
 
             String line = bReader.readLine();
@@ -171,6 +174,7 @@ public class FileBackedTaskManagerTest {
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
             bReader.readLine();
+            bReader.readLine();
 
             String line = bReader.readLine();
             assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
@@ -182,6 +186,7 @@ public class FileBackedTaskManagerTest {
         manager.removeTask(1L);
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
             bReader.readLine();
+            bReader.readLine();
 
             String line = bReader.readLine();
             assertNull(line);
@@ -190,6 +195,21 @@ public class FileBackedTaskManagerTest {
             throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
         }
 
+    }
+
+    @Test
+    @DisplayName("История должна корректно восстанавливаться из файла")
+    public void historyShouldBeCorrectlyRecorded() {
+        taskManager.getTask(1L);
+        taskManager.getSubTask(6L);
+        taskManager.getTask(2L);
+        taskManager.getEpic(3L);
+        taskManager.getEpic(4L);
+
+
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/testHistory.csv"));
+
+        assertEquals(taskManager.getHistory(), manager.getHistory());
     }
 
 

@@ -22,6 +22,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            List<Task> historyList = super.getHistory();
+            if (historyList.isEmpty()) {
+                writer.write("\n");
+            } else {
+                StringBuilder history = new StringBuilder();
+                for (Task task : historyList) {
+                    history.append(task.getId()).append(",").append(task.getType()).append(",");
+                }
+                history.deleteCharAt(history.length() - 1);
+                writer.write(history + "\n");
+            }
             writer.write("id,type,name,status,description,epic\n");
             for (Epic epic : super.epics.values()) {
                 writer.write(toString(epic));
@@ -32,6 +43,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task task : super.tasks.values()) {
                 writer.write(toString(task));
             }
+
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла непредвиденная ошибка при сохранении");
         }
@@ -145,13 +157,41 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    @Override
+    public Task getTask(Long id) {
+        Task task = super.getTask(id);
+        save();
+        return task;
+    }
+
+    @Override
+    public Subtask getSubTask(Long id) {
+        Subtask subT = super.getSubTask(id);
+        save();
+        return subT;
+    }
+
+    @Override
+    public Epic getEpic(Long id) {
+        Epic epic = super.getEpic(id);
+        save();
+        return epic;
+    }
+
     public static FileBackedTaskManager loadFromFile(File file) {
 
         long countCurrent = 0;
+        String[] history;
         List<Subtask> subtaskList = new ArrayList<>();
         FileBackedTaskManager newManager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+            String line = bReader.readLine();
+            if (line != null && !line.isEmpty()) {
+                history = line.split(",");
+            } else {
+                history = new String[0];
+            }
             bReader.readLine();
             while (bReader.ready()) {
 
@@ -186,12 +226,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                 }
 
+
             }
             for (Subtask task : subtaskList) { // чтобы создание работало при любом порядке задач в файлах
                 Epic epic = newManager.getEpic(task.getEpic().getId());
                 task.setEpic(epic);
                 epic.addTask(task);
                 newManager.subtasks.put(task.getId(), task);
+            }
+            for (int i = 0; i < history.length - 1; i += 2) {
+                TaskType type = TaskType.valueOf(history[i + 1]);
+                switch (type) {
+                    case TASK:
+                        newManager.getTask(Long.parseLong(history[i]));
+                        break;
+                    case EPIC:
+                        newManager.getEpic(Long.parseLong(history[i]));
+                        break;
+                    case SUBTASK:
+                        newManager.getSubTask(Long.parseLong(history[i]));
+                        break;
+                    default:
+                        break;
+                }
+
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
