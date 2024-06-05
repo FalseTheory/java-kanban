@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,9 @@ public class Epic extends Task {
                 ", description=" + super.getDescription() +
                 ", id=" + super.getId() +
                 ", status=" + super.getStatus() +
-                ", subTasksList=" + subTasksList +
+                ", subTasksList=" + subTasksList  +
+                ", duration=" + super.duration +
+                ", startTime=" + super.startTime +
                 '}';
     }
 
@@ -48,5 +51,8 @@ public class Epic extends Task {
         return TaskType.EPIC;
     }
 
-
+    @Override
+    public LocalDateTime getEndTime() {
+        return super.getEndTime();
+    }
 }

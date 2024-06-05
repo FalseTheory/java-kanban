@@ -180,11 +180,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         boolean isDone = true;
+        boolean isNew = true;
+
         for (Subtask subtask : epicTasks) {
             if (subtask.getStatus() != TaskStatus.DONE) {
                 epic.setStatus(TaskStatus.IN_PROGRESS);
+                if (subtask.getStatus() != TaskStatus.NEW) {
+                    isNew = false;
+                }
                 isDone = false;
-                break;
             }
 
         }
@@ -192,14 +196,10 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.DONE);
             return;
         }
-        for (Subtask subtask : epicTasks) {
-            if (subtask.getStatus() != TaskStatus.NEW) {
-                epic.setStatus(TaskStatus.IN_PROGRESS);
-                return;
-            }
-
+        if (isNew) {
+            epic.setStatus(TaskStatus.NEW);
         }
-        epic.setStatus(TaskStatus.NEW);
+
 
     }
 
