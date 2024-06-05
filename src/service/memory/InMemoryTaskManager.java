@@ -8,10 +8,13 @@ import model.TaskStatus;
 import service.HistoryManager;
 import service.TaskManager;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
+
+    protected final static DateTimeFormatter TASK_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yy:MM:dd;HH:mm");
     protected long count = 0;
 
     protected final HistoryManager historyManager;

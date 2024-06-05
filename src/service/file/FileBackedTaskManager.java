@@ -7,6 +7,8 @@ import service.Managers;
 import service.memory.InMemoryTaskManager;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,17 +54,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String[] items = value.split(",");
+        long id = Long.parseLong(items[0]);
+        String name = items[2];
+        TaskStatus taskStatus = TaskStatus.valueOf(items[3]);
         TaskType type = TaskType.valueOf(items[1]);
+        String description = items[4];
+        LocalDateTime startTime;
+        Duration duration;
+
         switch (type) {
             case TASK:
-                return new Task(items[2], items[4], TaskStatus.valueOf(items[3]), Long.parseLong(items[0]));
+                startTime = LocalDateTime.parse(items[6],TASK_DATE_TIME_FORMATTER);
+                duration = Duration.ofMinutes(Long.parseLong(items[7]));
+                return new Task(name, description, taskStatus, id, duration, startTime);
             case EPIC:
-                Epic newEpic = new Epic(items[2], items[4], Long.parseLong(items[0]));
+                Epic newEpic = new Epic(name, description, id);
                 newEpic.setStatus(TaskStatus.valueOf(items[3]));
                 return newEpic;
             case SUBTASK:
-                return new Subtask(items[2], items[4], new Epic(null, null, Long.parseLong(items[5])),
-                        TaskStatus.valueOf(items[3]), Long.parseLong(items[0]));
+                long epicId = Long.parseLong(items[5]);
+                startTime = LocalDateTime.parse(items[6],TASK_DATE_TIME_FORMATTER);
+                duration = Duration.ofMinutes(Long.parseLong(items[7]));
+                return new Subtask(name, description, new Epic(null, null, epicId),
+                        taskStatus, id,duration,startTime);
             default:
                 return null;
         }
@@ -71,18 +85,32 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String toString(Task task) {
         Long epicId;
+        String startTime ;
+        Long durationInMinutes;
         if (task.getEpic() == null) {
             epicId = null;
         } else {
             epicId = task.getEpic().getId();
         }
-        return String.format("%d,%s,%s,%s,%s,%d\n",
+        if(task.getStartTime()==null){
+            startTime = null;
+        }else{
+            startTime = task.getStartTime().format(TASK_DATE_TIME_FORMATTER);
+        }
+        if(task.getDuration()==null){
+            durationInMinutes = null;
+        }else{
+            durationInMinutes = task.getDuration().toMinutes();
+        }
+        return String.format("%d,%s,%s,%s,%s,%d,%s,%d\n",
                 task.getId(),
                 task.getType().name(),
                 task.getName(),
                 task.getStatus().name(),
                 task.getDescription(),
-                epicId);
+                epicId,
+                startTime,
+                durationInMinutes);
     }
 
     @Override
