@@ -1,6 +1,6 @@
 package service.file;
 
-import exception.ManagerSaveException;
+import exception.ManagerIOException;
 import model.*;
 import service.HistoryManager;
 import service.Managers;
@@ -45,7 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Произошла непредвиденная ошибка при сохранении");
+            throw new ManagerIOException("Произошла непредвиденная ошибка при сохранении");
         }
 
     }
@@ -201,7 +201,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = newManager.fromString(bReader.readLine());
 
                 if (task == null) {
-                    throw new ManagerSaveException("Данные сохранены неправильно или повреждены");
+                    throw new ManagerIOException("Данные сохранены неправильно или повреждены");
                 }
                 TaskType type = task.getType();
 
@@ -255,7 +255,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+            throw new ManagerIOException("Ошибка при восстановлении менеджера из файла");
         } finally {
             newManager.count = countCurrent;
         }

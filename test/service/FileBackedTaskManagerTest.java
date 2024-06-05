@@ -1,6 +1,6 @@
 package service;
 
-import exception.ManagerSaveException;
+import exception.ManagerIOException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -41,7 +41,6 @@ public class FileBackedTaskManagerTest {
 
     @Test
     @DisplayName("Менеджер должен корректно восстанавливаться из файла")
-
     public void managerShouldBeCorrectlyRestoredFromFile() {
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/test1.csv"));
 
@@ -128,7 +127,7 @@ public class FileBackedTaskManagerTest {
             assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+            throw new ManagerIOException("Ошибка при восстановлении менеджера из файла");
         }
 
     }
@@ -156,7 +155,7 @@ public class FileBackedTaskManagerTest {
             assertEquals("2,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,1", line2);
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+            throw new ManagerIOException("Ошибка при восстановлении менеджера из файла");
         }
 
 
@@ -180,7 +179,7 @@ public class FileBackedTaskManagerTest {
             assertEquals("1,TASK,Поесть,NEW,Описание,null", line);
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+            throw new ManagerIOException("Ошибка при восстановлении менеджера из файла");
         }
 
         manager.removeTask(1L);
@@ -192,7 +191,7 @@ public class FileBackedTaskManagerTest {
             assertNull(line);
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при восстановлении менеджера из файла");
+            throw new ManagerIOException("Ошибка при восстановлении менеджера из файла");
         }
 
     }
