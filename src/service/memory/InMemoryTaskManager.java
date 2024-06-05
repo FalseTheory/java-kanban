@@ -8,9 +8,7 @@ import model.TaskStatus;
 import service.HistoryManager;
 import service.TaskManager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -20,6 +18,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Long, Task> tasks;
     protected final Map<Long, Subtask> subtasks;
     protected final Map<Long, Epic> epics;
+    protected final Set<Task> prioritizedTasks;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -27,35 +26,35 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks = new HashMap<>();
         epics = new HashMap<>();
         this.historyManager = historyManager;
+        this.prioritizedTasks = new TreeSet<>(new TasksByPriorityComparator());
 
     }
 
 
     @Override
     public void clearAllTasks() {
-        for (long id : tasks.keySet()) {
-            removeTask(id);
-        }
+        tasks.keySet()
+                .forEach(this::removeTask);
     }
 
     @Override
     public void clearAllEpics() {
         clearAllSubtasks();
-        for (long id : epics.keySet()) {
-            removeEpicTask(id);
-        }
+        epics.keySet()
+                .forEach(this::removeEpicTask);
     }
 
     @Override
     public void clearAllSubtasks() {
-        for (Epic epic : epics.values()) {
-            List<Subtask> temp = epic.getSubTasksList();
-            for (Subtask subtask : temp) {
-                removeSubTask(subtask.getId());
-            }
-            temp.clear();
-            calculateStatus(epic);
-        }
+        epics.values()
+                .forEach(epic -> {
+                    epic.getSubTasksList()
+                            .forEach(subtask -> subtasks.remove(subtask.getId()));
+
+                    epic.getSubTasksList().clear();
+                    calculateStatus(epic);
+
+                });
     }
 
     @Override
@@ -174,6 +173,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void calculateStatus(Epic epic) {
         List<Subtask> epicTasks = epic.getSubTasksList();
+
         if (epicTasks.isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
             return;
@@ -226,6 +226,24 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Map<Long, Epic> getEpics() {
         return epics;
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    private static class TasksByPriorityComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task t1, Task t2) {
+            if (t1.getStartTime().isBefore(t2.getStartTime())) {
+                return -1;
+            } else if (t1.getStartTime().isEqual(t2.getStartTime())) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 
 
