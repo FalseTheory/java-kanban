@@ -1,6 +1,7 @@
 package service.memory;
 
 import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -8,6 +9,7 @@ import model.TaskStatus;
 import service.HistoryManager;
 import service.TaskManager;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -89,17 +91,25 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubTask(Subtask subtask) {
         subtask.setId(generateId());
+        if (!isTaskValid(subtask)) {
+            throw new ValidationException("Задача пересекается с другой задачей");
+        }
         subtask.getEpic().addTask(subtask);
         subtasks.put(subtask.getId(), subtask);
+        prioritizedTasks.add(subtask);
         calculateStatus(subtask.getEpic());
+
         return subtask;
     }
 
     @Override
     public Task createTask(Task task) {
         task.setId(generateId());
+        if (!isTaskValid(task)) {
+            throw new ValidationException("Задача пересекается с другой задачей");
+        }
         tasks.put(task.getId(), task);
-
+        prioritizedTasks.add(task);
         return task;
     }
 
@@ -133,6 +143,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        if (!isTaskValid(task)) {
+            throw new ValidationException("Задача пересекается с другой задачей");
+        }
         if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
         }
@@ -140,6 +153,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(Subtask subtask) {
+        if (!isTaskValid(subtask)) {
+            throw new ValidationException("Задача пересекается с другой задачей");
+        }
         if (subtasks.containsKey(subtask.getId())) {
             Epic tempEpic = subtask.getEpic();
             if (epics.get(tempEpic.getId()) == null) {
@@ -213,6 +229,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     private long generateId() {
         return ++count;
+    }
+
+
+    private boolean isTaskValid(Task task) {
+
+
+        LocalDateTime endTime = task.getEndTime();
+        Optional<Task> intersect = prioritizedTasks
+                .stream()
+                .filter(task1 -> task1.getId() != task.getId() && (
+                                (!task.getStartTime().isAfter(task1.getStartTime()) && endTime.isAfter(task1.getStartTime()))
+                                        || (endTime.isBefore(task1.getEndTime()) && task.getStartTime().isAfter(task1.getStartTime()))
+                        )
+                )
+                .findFirst();
+
+        return intersect.isEmpty();
     }
 
 

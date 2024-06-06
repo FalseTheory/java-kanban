@@ -1,16 +1,19 @@
 package model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
 
+    private LocalDateTime endTime;
+
     private final List<Subtask> subTasksList;
 
 
     public Epic(String name, String description) {
-        super(name, description, null,null,null);
+        super(name, description, null, null, null);
         subTasksList = new ArrayList<>();
     }
 
@@ -21,10 +24,12 @@ public class Epic extends Task {
 
     public void addTask(Subtask subtask) {
         subTasksList.add(subtask);
+        calculateTimeAndDuration();
     }
 
     public void removeTask(Subtask subtask) {
         subTasksList.removeIf(subtask1 -> subtask1.equals(subtask));
+        calculateTimeAndDuration();
 
     }
 
@@ -36,7 +41,7 @@ public class Epic extends Task {
                 ", description=" + super.getDescription() +
                 ", id=" + super.getId() +
                 ", status=" + super.getStatus() +
-                ", subTasksList=" + subTasksList  +
+                ", subTasksList=" + subTasksList +
                 ", duration=" + super.duration +
                 ", startTime=" + super.startTime +
                 '}';
@@ -53,6 +58,28 @@ public class Epic extends Task {
 
     @Override
     public LocalDateTime getEndTime() {
-        return super.getEndTime();
+        return endTime;
+    }
+
+    public void calculateTimeAndDuration() {
+        if (subTasksList.isEmpty()) {
+            endTime = null;
+            startTime = null;
+            duration = null;
+        } else {
+            endTime = LocalDateTime.MIN;
+            startTime = LocalDateTime.MAX;
+            duration = Duration.ZERO;
+
+            subTasksList.forEach(subtask -> {
+                if (subtask.getStartTime().isBefore(startTime)) {
+                    startTime = subtask.getStartTime();
+                }
+                if (subtask.getEndTime().isAfter(endTime)) {
+                    endTime = subtask.getEndTime();
+                }
+                duration = duration.plus(subtask.getDuration());
+            });
+        }
     }
 }

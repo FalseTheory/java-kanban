@@ -1,22 +1,21 @@
 package service;
 
 
+import exception.ValidationException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Менеджер задач")
 public class InMemoryTaskManagerTest {
@@ -167,6 +166,62 @@ public class InMemoryTaskManagerTest {
         assertEquals(expectedList, taskManager.getHistory());
 
 
+    }
+
+    @Test
+    @DisplayName("Задача не должна пересекаться на границах")
+    public void taskTimeShouldNotIntersect(){
+
+
+        Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,30));
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,13,0));
+        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,0));
+
+
+        taskManager.createTask(task);
+        assertDoesNotThrow(() -> taskManager.createTask(task1));
+        assertDoesNotThrow(() -> taskManager.createTask(task2));
+    }
+
+    @Test
+    @DisplayName("Задача не должна пересекаться с собой")
+    public void taskShouldNotIntersectWithSelf(){
+        Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,30));
+        taskManager.createTask(task);
+        Task updatedTask = new Task("Задача 1", "Описание", TaskStatus.NEW, task.getId(), Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,15));
+
+        assertDoesNotThrow(() -> taskManager.updateTask(updatedTask));
+
+    }
+
+    @Test
+    @DisplayName("Задача не должна быть создана при пересечении")
+    public void taskShouldNotBeCreatedWhenIntersect(){
+        Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,30));
+
+        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, task.getId(), Duration.ofMinutes(100),
+                LocalDateTime.of(2015,6,7,12,15));
+
+        taskManager.createTask(task);
+        assertThrows(ValidationException.class, ()->taskManager.createTask(task2));
+    }
+    @Test
+    @DisplayName("Задачи не могут начинаться в одно время")
+    public void taskShouldNotHaveSameStartTime(){
+        Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2015,6,7,12,15));
+
+        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, task.getId(), Duration.ofMinutes(100),
+                LocalDateTime.of(2015,6,7,12,15));
+
+        taskManager.createTask(task);
+        assertThrows(ValidationException.class, ()->taskManager.createTask(task2));
     }
 
 
