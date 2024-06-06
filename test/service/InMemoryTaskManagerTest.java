@@ -32,9 +32,13 @@ public class InMemoryTaskManagerTest {
     @Test
     @DisplayName("Мапы каждого типа задач должны корректно добавлять задачи своих типов")
     public void tasksListsShouldNotBeEmptyAfterTaskAddition() {
-        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2013,11,12,4,5));
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2014,11,12,4,5));
 
         taskManager.createTask(task1);
         taskManager.createEpic(epic1);
@@ -48,9 +52,13 @@ public class InMemoryTaskManagerTest {
     @Test
     @DisplayName("Мапы каждого типа задач должны корректно удалять элементы по id из мапов и истории")
     public void shouldCorrectlyRemoveElementsByIdForEveryMapAndHistory() {
-        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2013,11,12,4,5));
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2017,11,12,4,5));
 
 
         taskManager.createTask(task1);
@@ -84,15 +92,25 @@ public class InMemoryTaskManagerTest {
         taskManager.createEpic(epic1);
         assertEquals(epic1.getStatus(), TaskStatus.NEW);
 
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
-        Subtask subtask2 = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.IN_PROGRESS);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1,
+                TaskStatus.NEW,Duration.ofMinutes(30),
+                LocalDateTime.of(2014,12,12,12,12));
+        Subtask subtask2 = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.IN_PROGRESS,
+                Duration.ofMinutes(33),
+                LocalDateTime.of(2015,11,11,6,4));
 
         taskManager.createSubTask(subtask1);
         taskManager.createSubTask(subtask2);
         assertEquals(epic1.getStatus(), TaskStatus.IN_PROGRESS);
 
-        Subtask subtask1_change = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.DONE, subtask1.getId());
-        Subtask subtask2_change = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.DONE, subtask2.getId());
+        Subtask subtask1_change = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.DONE,
+                subtask1.getId(),
+                subtask1.getDuration(),
+                subtask1.getStartTime());
+        Subtask subtask2_change = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.DONE,
+                subtask2.getId(),
+                subtask2.getDuration(),
+                subtask2.getStartTime());
 
         taskManager.updateSubTask(subtask1_change);
         taskManager.updateSubTask(subtask2_change);
@@ -107,16 +125,25 @@ public class InMemoryTaskManagerTest {
     @DisplayName("Задачи должны корректно обновляться с сохранением id")
     public void shouldCorrectlyUpdateTasksOfAnyType() {
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
-        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2013,11,12,4,5));
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2013,9,12,4,5));
 
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subtask1);
         taskManager.createTask(task1);
 
         Epic epicUpdate = new Epic("Эпик", "Описание эпик", epic1.getId());
-        Subtask subtaskUpdate = new Subtask("Подзадача", "Описание саб", epic1, TaskStatus.IN_PROGRESS, subtask1.getId());
-        Task taskUpdate = new Task("Задача", "Описание таск", TaskStatus.IN_PROGRESS, task1.getId());
+        Subtask subtaskUpdate = new Subtask("Подзадача", "Описание саб", epic1, TaskStatus.IN_PROGRESS,
+                subtask1.getId(),
+                subtask1.getDuration(),
+                subtask1.getStartTime());
+        Task taskUpdate = new Task("Задача", "Описание таск", TaskStatus.IN_PROGRESS, task1.getId(),
+                task1.getDuration(),
+                task1.getStartTime());
 
         taskManager.updateTask(taskUpdate);
         Task taskFromManager = taskManager.getTask(taskUpdate.getId());
@@ -144,8 +171,12 @@ public class InMemoryTaskManagerTest {
     @DisplayName("История должна записываться при обращению к любому виду задач")
     public void shouldRecordHistoryForTaskOfAnyType() {
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW);
-        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2013,11,12,4,5));
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                ,LocalDateTime.of(2015,11,12,4,5));
 
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subtask1);

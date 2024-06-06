@@ -91,11 +91,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubTask(Subtask subtask) {
         subtask.setId(generateId());
-        if (!isTaskValid(subtask)) {
+        if (subtask.getStartTime()!=null && !isTaskValid(subtask)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         subtask.getEpic().addTask(subtask);
         subtasks.put(subtask.getId(), subtask);
+
         prioritizedTasks.add(subtask);
         calculateStatus(subtask.getEpic());
 
@@ -105,7 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         task.setId(generateId());
-        if (!isTaskValid(task)) {
+        if (task.getStartTime()!=null && !isTaskValid(task)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         tasks.put(task.getId(), task);
