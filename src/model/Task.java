@@ -26,15 +26,17 @@ public class Task {
         this(name, description, status);
         this.id = id;
     }
-    public Task(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime){
+
+    public Task(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.duration = duration;
         this.startTime = startTime;
     }
-    public Task(String name, String description, TaskStatus status, long id, Duration duration, LocalDateTime startTime){
-        this(name,description,status,duration,startTime);
+
+    public Task(String name, String description, TaskStatus status, long id, Duration duration, LocalDateTime startTime) {
+        this(name, description, status, duration, startTime);
         this.id = id;
     }
 
@@ -117,7 +119,7 @@ public class Task {
         return startTime;
     }
 
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }
 
