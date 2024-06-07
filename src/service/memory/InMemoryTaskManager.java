@@ -91,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubTask(Subtask subtask) {
         subtask.setId(generateId());
-        if (subtask.getStartTime()!=null && !isTaskValid(subtask)) {
+        if (subtask.getStartTime() != null && !isTaskValid(subtask)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         subtask.getEpic().addTask(subtask);
@@ -106,7 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         task.setId(generateId());
-        if (task.getStartTime()!=null && !isTaskValid(task)) {
+        if (task.getStartTime() != null && !isTaskValid(task)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         tasks.put(task.getId(), task);
@@ -148,7 +148,13 @@ public class InMemoryTaskManager implements TaskManager {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         if (tasks.containsKey(task.getId())) {
-            tasks.put(task.getId(), task);
+            Task updatedTask = tasks.get(task.getId());
+            updatedTask.setName(task.getName());
+            updatedTask.setStatus(task.getStatus());
+            updatedTask.setDescription(task.getDescription());
+            updatedTask.setDuration(task.getDuration());
+            updatedTask.setStartTime(task.getStartTime());
+
         }
     }
 
@@ -162,10 +168,15 @@ public class InMemoryTaskManager implements TaskManager {
             if (epics.get(tempEpic.getId()) == null) {
                 throw new NotFoundException("Не найден эпик по id: " + tempEpic.getId());
             }
-            tempEpic.removeTask(subtask);
-            tempEpic.addTask(subtask);
-            subtasks.put(subtask.getId(), subtask);
-            calculateStatus(subtask.getEpic());
+            Subtask updatedSubtask = subtasks.get(subtask.getId());
+            updatedSubtask.setName(subtask.getName());
+            updatedSubtask.setDescription(subtask.getDescription());
+            updatedSubtask.setStatus(subtask.getStatus());
+            updatedSubtask.setStartTime(subtask.getStartTime());
+            updatedSubtask.setDuration(subtask.getDuration());
+
+
+            calculateStatus(updatedSubtask.getEpic());
         }
 
     }

@@ -20,40 +20,44 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static service.Managers.getDefaultHistory;
 
-public class FileBackedTaskManagerTest {
+@DisplayName("Файловый менеджер задач")
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-
-    private static TaskManager taskManager;
 
     @BeforeEach
-    public void beforeEach() {
-        taskManager = Managers.getInMemoryManager();
+    public void beforeEach() throws IOException {
+        taskManager = new FileBackedTaskManager(getDefaultHistory(), File.createTempFile("testsTemp", ".csv"));
+
+    }
+
+
+    @Test
+    @DisplayName("Менеджер должен корректно восстанавливаться из файла")
+    public void managerShouldBeCorrectlyRestoredFromFile() {
 
         taskManager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW,
                 Duration.ofMinutes(3)
-                , LocalDateTime.of(2013,11,12,4,5)));
+                , LocalDateTime.of(2013, 11, 12, 4, 5)));
         taskManager.createTask(new Task("Нарисовать дом", "Описание", TaskStatus.NEW,
                 Duration.ofMinutes(3)
-                ,LocalDateTime.of(2014,11,12,4,5)));
+                , LocalDateTime.of(2014, 11, 12, 4, 5)));
 
         taskManager.createEpic(new Epic("Пустой эпик", "Пустота"));
         taskManager.createEpic(new Epic("Не пустой эпик", "Описание"));
 
         taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
-                ,LocalDateTime.of(2016,11,12,4,5)));
+                , LocalDateTime.of(2016, 11, 12, 4, 5)));
         taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
-                ,LocalDateTime.of(2010,11,12,4,5)));
+                , LocalDateTime.of(2010, 11, 12, 4, 5)));
         taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
-                ,LocalDateTime.of(2007,11,12,4,5)));
-    }
+                , LocalDateTime.of(2007, 11, 12, 4, 5)));
 
-    @Test
-    @DisplayName("Менеджер должен корректно восстанавливаться из файла")
-    public void managerShouldBeCorrectlyRestoredFromFile() {
+
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(new File("testResources/test1.csv"));
 
 
@@ -87,6 +91,7 @@ public class FileBackedTaskManagerTest {
 
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(File.createTempFile("testEmpty", ".csv"));
 
+
         assertTrue(manager.getTasks().isEmpty());
         assertTrue(manager.getEpics().isEmpty());
         assertTrue(manager.getSubtasks().isEmpty());
@@ -98,11 +103,12 @@ public class FileBackedTaskManagerTest {
     public void managerShouldCorrectlySaveTasksToFile() throws IOException {
         File file = File.createTempFile("testWrite", ".csv");
 
+
         FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
 
         manager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW,
                 Duration.ofMinutes(15),
-                LocalDateTime.of(2014,12,12,12,12)));
+                LocalDateTime.of(2014, 12, 12, 12, 12)));
 
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
@@ -129,7 +135,7 @@ public class FileBackedTaskManagerTest {
 
         manager.createSubTask(new Subtask("Подзадача 1", "Описание", manager.getEpic(1L), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(33)
-                ,LocalDateTime.of(2001,1,1,3,4)));
+                , LocalDateTime.of(2001, 1, 1, 3, 4)));
 
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
@@ -159,7 +165,7 @@ public class FileBackedTaskManagerTest {
 
         manager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW,
                 Duration.ofMinutes(15),
-                LocalDateTime.of(2014,12,12,12,12)));
+                LocalDateTime.of(2014, 12, 12, 12, 12)));
 
         try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
             bReader.readLine();
@@ -189,6 +195,27 @@ public class FileBackedTaskManagerTest {
     @Test
     @DisplayName("История должна корректно восстанавливаться из файла")
     public void historyShouldBeCorrectlyRecorded() {
+
+        taskManager.createTask(new Task("Поесть", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2013, 11, 12, 4, 5)));
+        taskManager.createTask(new Task("Нарисовать дом", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2014, 11, 12, 4, 5)));
+
+        taskManager.createEpic(new Epic("Пустой эпик", "Пустота"));
+        taskManager.createEpic(new Epic("Не пустой эпик", "Описание"));
+
+        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2016, 11, 12, 4, 5)));
+        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2010, 11, 12, 4, 5)));
+        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2007, 11, 12, 4, 5)));
+
         taskManager.getTask(1L);
         taskManager.getSubTask(6L);
         taskManager.getTask(2L);
