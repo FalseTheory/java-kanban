@@ -64,7 +64,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         switch (type) {
             case TASK:
-                startTime = LocalDateTime.parse(items[6],TASK_DATE_TIME_FORMATTER);
+                startTime = LocalDateTime.parse(items[6], TASK_DATE_TIME_FORMATTER);
                 duration = Duration.ofMinutes(Long.parseLong(items[7]));
                 return new Task(name, description, taskStatus, id, duration, startTime);
             case EPIC:
@@ -73,10 +73,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 return newEpic;
             case SUBTASK:
                 long epicId = Long.parseLong(items[5]);
-                startTime = LocalDateTime.parse(items[6],TASK_DATE_TIME_FORMATTER);
+                startTime = LocalDateTime.parse(items[6], TASK_DATE_TIME_FORMATTER);
                 duration = Duration.ofMinutes(Long.parseLong(items[7]));
                 return new Subtask(name, description, new Epic(null, null, epicId),
-                        taskStatus, id,duration,startTime);
+                        taskStatus, id, duration, startTime);
             default:
                 return null;
         }
@@ -85,21 +85,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String toString(Task task) {
         Long epicId;
-        String startTime ;
+        String startTime;
         Long durationInMinutes;
         if (task.getEpic() == null) {
             epicId = null;
         } else {
             epicId = task.getEpic().getId();
         }
-        if(task.getStartTime()==null){
+        if (task.getStartTime() == null) {
             startTime = null;
-        }else{
+        } else {
             startTime = task.getStartTime().format(TASK_DATE_TIME_FORMATTER);
         }
-        if(task.getDuration()==null){
+        if (task.getDuration() == null) {
             durationInMinutes = null;
-        }else{
+        } else {
             durationInMinutes = task.getDuration().toMinutes();
         }
         return String.format("%d,%s,%s,%s,%s,%d,%s,%d\n",
