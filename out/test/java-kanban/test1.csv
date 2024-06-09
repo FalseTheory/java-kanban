@@ -1,9 +1,9 @@
 1,TASK,6,SUBTASK,2,TASK,3,EPIC,4,EPIC
 id,type,name,status,description,epic
-3,EPIC,Пустой эпик,IN_PROGRESS,Пустота,null
-4,EPIC,Не пустой эпик,NEW,Описание,null
-5,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,3
-6,SUBTASK,Подзадача 2,IN_PROGRESS,Описание,3
-7,SUBTASK,Подзадача 3,IN_PROGRESS,Описание,3
-1,TASK,Поесть,NEW,Описание,null
-2,TASK,Нарисовать дом,NEW,Описание,null
+3,EPIC,Пустой эпик,IN_PROGRESS,Пустота,null,24:06:05;21:23,45
+4,EPIC,Не пустой эпик,NEW,Описание,null,null,null
+5,SUBTASK,Подзадача 1,IN_PROGRESS,Описание,3,24:06:05;21:23,15
+6,SUBTASK,Подзадача 2,IN_PROGRESS,Описание,3,24:06:05;21:23,15
+7,SUBTASK,Подзадача 3,IN_PROGRESS,Описание,3,24:06:05;21:23,15
+1,TASK,Поесть,NEW,Описание,null,24:06:05;21:23,15
+2,TASK,Нарисовать дом,NEW,Описание,null,24:06:05;21:23,15

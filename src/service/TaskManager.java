@@ -6,6 +6,7 @@ import model.Task;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface TaskManager {
 
@@ -15,11 +16,11 @@ public interface TaskManager {
 
     void clearAllSubtasks();
 
-    Task getTask(Long id);
+    Optional<Task> getTask(Long id);
 
-    Subtask getSubTask(Long id);
+    Optional<Subtask> getSubTask(Long id);
 
-    Epic getEpic(Long id);
+    Optional<Epic> getEpic(Long id);
 
     Epic createEpic(Epic epic);
 
@@ -48,5 +49,7 @@ public interface TaskManager {
     Map<Long, Epic> getEpics();
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 
 }
