@@ -158,21 +158,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 task1.getStartTime());
 
         taskManager.updateTask(taskUpdate);
-        Task taskFromManager = taskManager.getTask(taskUpdate.getId());
+        Task taskFromManager = taskManager.getTask(taskUpdate.getId()).get();
         assertEquals(taskUpdate, taskFromManager);
         assertEquals("Задача", taskFromManager.getName()); //отдельная проверка полей, поскольку equals по заданию проверяет только id
         assertEquals("Описание таск", taskFromManager.getDescription());
         assertEquals(TaskStatus.IN_PROGRESS, taskFromManager.getStatus());
 
         taskManager.updateSubTask(subtaskUpdate);
-        Subtask subtaskFromManager = taskManager.getSubTask(subtaskUpdate.getId());
+        Subtask subtaskFromManager = taskManager.getSubTask(subtaskUpdate.getId()).get();
         assertEquals(subtaskUpdate, subtaskFromManager);
         assertEquals("Подзадача", subtaskFromManager.getName());
         assertEquals("Описание саб", subtaskFromManager.getDescription());
         assertEquals(TaskStatus.IN_PROGRESS, subtaskFromManager.getStatus());
 
         taskManager.updateEpic(epicUpdate);
-        Epic epicFromManager = taskManager.getEpic(epicUpdate.getId());
+        Epic epicFromManager = taskManager.getEpic(epicUpdate.getId()).get();
         assertEquals(epicUpdate, epicFromManager);
         assertEquals("Эпик", epicFromManager.getName());
         assertEquals("Описание эпик", epicFromManager.getDescription());
