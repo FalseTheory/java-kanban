@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -188,22 +189,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task getTask(Long id) {
-        Task task = super.getTask(id);
+    public Optional<Task> getTask(Long id) {
+        Optional<Task> task = super.getTask(id);
         save();
         return task;
     }
 
     @Override
-    public Subtask getSubTask(Long id) {
-        Subtask subT = super.getSubTask(id);
+    public Optional<Subtask> getSubTask(Long id) {
+        Optional<Subtask> subT = super.getSubTask(id);
         save();
         return subT;
     }
 
     @Override
-    public Epic getEpic(Long id) {
-        Epic epic = super.getEpic(id);
+    public Optional<Epic> getEpic(Long id) {
+        Optional<Epic> epic = super.getEpic(id);
         save();
         return epic;
     }
@@ -259,10 +260,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             }
             for (Subtask task : subtaskList) {
-                Epic epic = newManager.getEpic(task.getEpic().getId());
-                task.setEpic(epic);
-                epic.addTask(task);
-                newManager.subtasks.put(task.getId(), task);
+
+                Optional<Epic> optEpic = newManager.getEpic(task.getEpic().getId());
+                if (optEpic.isPresent()) {
+                    Epic epic = optEpic.get();
+                    task.setEpic(epic);
+                    epic.addTask(task);
+                    newManager.subtasks.put(task.getId(), task);
+                }
+
             }
             for (int i = 0; i < history.length - 1; i += 2) {
                 TaskType type = TaskType.valueOf(history[i + 1]);

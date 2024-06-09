@@ -63,21 +63,30 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(Long id) {
-        historyManager.add(tasks.get(id));
-        return tasks.get(id);
+    public Optional<Task> getTask(Long id) {
+        Optional<Task> task = Optional.ofNullable(tasks.getOrDefault(id, null));
+        if (task.isPresent()) {
+            historyManager.add(tasks.get(id));
+        }
+        return task;
     }
 
     @Override
-    public Subtask getSubTask(Long id) {
-        historyManager.add(subtasks.get(id));
-        return subtasks.get(id);
+    public Optional<Subtask> getSubTask(Long id) {
+        Optional<Subtask> subtask = Optional.ofNullable(subtasks.getOrDefault(id, null));
+        if (subtask.isPresent()) {
+            historyManager.add(subtasks.get(id));
+        }
+        return subtask;
     }
 
     @Override
-    public Epic getEpic(Long id) {
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+    public Optional<Epic> getEpic(Long id) {
+        Optional<Epic> epic = Optional.ofNullable(epics.getOrDefault(id, null));
+        if (epic.isPresent()) {
+            historyManager.add(epics.get(id));
+        }
+        return epic;
     }
 
     @Override

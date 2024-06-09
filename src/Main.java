@@ -22,9 +22,9 @@ public class Main {
         taskManager.createEpic(new Epic("Пустой эпик", "Пустота"));
         taskManager.createEpic(new Epic("Не пустой эпик", "Описание"));
 
-        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS));
-        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS));
-        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS));
+        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS));
+        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS));
+        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS));
 
         System.out.println(taskManager.getHistory()); //выводит только эпик только 1 раз
         taskManager.getTask(1L);

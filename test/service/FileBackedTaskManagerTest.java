@@ -47,13 +47,13 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         taskManager.createEpic(new Epic("Пустой эпик", "Пустота"));
         taskManager.createEpic(new Epic("Не пустой эпик", "Описание"));
 
-        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2016, 11, 12, 4, 5)));
-        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2010, 11, 12, 4, 5)));
-        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2007, 11, 12, 4, 5)));
 
@@ -65,14 +65,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         assertEquals(taskManager.getTasks(), manager.getTasks());
         assertEquals(taskManager.getSubtasks(), manager.getSubtasks());
 
-        List<Subtask> expectedSubTasks4 = taskManager.getEpic(4L).getSubTasksList();
-        List<Subtask> expectedSubTasks3 = taskManager.getEpic(3L).getSubTasksList();
+        List<Subtask> expectedSubTasks4 = taskManager.getEpic(4L).get().getSubTasksList();
+        List<Subtask> expectedSubTasks3 = taskManager.getEpic(3L).get().getSubTasksList();
 
         expectedSubTasks3.sort(new SubtaskComparator());
         expectedSubTasks4.sort(new SubtaskComparator());
 
-        List<Subtask> actualSubTasks3 = manager.getEpic(3L).getSubTasksList();
-        List<Subtask> actualSubTasks4 = manager.getEpic(4L).getSubTasksList();
+        List<Subtask> actualSubTasks3 = manager.getEpic(3L).get().getSubTasksList();
+        List<Subtask> actualSubTasks4 = manager.getEpic(4L).get().getSubTasksList();
 
         actualSubTasks3.sort(new SubtaskComparator());
         actualSubTasks4.sort(new SubtaskComparator());
@@ -133,7 +133,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
         manager.createEpic(new Epic("Не пустой эпик", "Описание"));
 
-        manager.createSubTask(new Subtask("Подзадача 1", "Описание", manager.getEpic(1L), TaskStatus.IN_PROGRESS,
+        manager.createSubTask(new Subtask("Подзадача 1", "Описание", manager.getEpic(1L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(33)
                 , LocalDateTime.of(2001, 1, 1, 3, 4)));
 
@@ -206,13 +206,13 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         taskManager.createEpic(new Epic("Пустой эпик", "Пустота"));
         taskManager.createEpic(new Epic("Не пустой эпик", "Описание"));
 
-        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 1", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2016, 11, 12, 4, 5)));
-        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 2", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2010, 11, 12, 4, 5)));
-        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L), TaskStatus.IN_PROGRESS,
+        taskManager.createSubTask(new Subtask("Подзадача 3", "Описание", taskManager.getEpic(3L).get(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2007, 11, 12, 4, 5)));
 
