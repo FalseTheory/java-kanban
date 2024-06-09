@@ -31,7 +31,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks = new HashMap<>();
         epics = new HashMap<>();
         this.historyManager = historyManager;
-        this.prioritizedTasks = new TreeSet<>(new TasksByPriorityComparator());
+        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     }
 
@@ -279,19 +279,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
-    }
-
-    private static class TasksByPriorityComparator implements Comparator<Task> {
-        @Override
-        public int compare(Task t1, Task t2) {
-            if (t1.getStartTime().isBefore(t2.getStartTime())) {
-                return -1;
-            } else if (t1.getStartTime().isEqual(t2.getStartTime())) {
-                return 0;
-            } else {
-                return 1;
-            }
-        }
     }
 
 

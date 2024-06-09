@@ -29,13 +29,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 writer.write("\n");
             } else {
                 StringBuilder history = new StringBuilder();
-                for (Task task : historyList) {
-                    history.append(task.getId()).append(",").append(task.getType()).append(",");
-                }
+                historyList
+                        .forEach(task -> history.append(task.getId()).append(",").append(task.getType()).append(","));
                 history.deleteCharAt(history.length() - 1);
                 writer.write(history + "\n");
             }
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,epic,startTime,duration\n");
             for (Epic epic : super.epics.values()) {
                 writer.write(toString(epic));
             }
