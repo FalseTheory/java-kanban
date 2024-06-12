@@ -248,6 +248,42 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     }
 
+    @Test
+    @DisplayName("Приоритезированный список задач должен составляться корректно")
+    public void shouldCorrectlyCreatePrioritizedList() {
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2015, 11, 12, 4, 5));
+        Task task2 = new Task("Задача 2", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2015, 10, 12, 4, 5));
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+
+        assertEquals(List.of(task2, task1), taskManager.getPrioritizedTasks());
+    }
+
+    @Test
+    @DisplayName("Приоритезированный список задач должен корректно удалять элементы")
+    public void shouldCorrectlyRemovePrioritizedTasks() {
+        Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2015, 11, 12, 4, 5));
+        Task task2 = new Task("Задача 2", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2015, 10, 12, 4, 5));
+        Task task3 = new Task("Задача 3", "Описание", TaskStatus.NEW,
+                Duration.ofMinutes(3)
+                , LocalDateTime.of(2015, 9, 12, 4, 5));
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+
+        taskManager.removeTask(2L);
+
+        assertEquals(List.of(task3, task1), taskManager.getPrioritizedTasks());
+    }
+
 
 }
 
