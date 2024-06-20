@@ -30,5 +30,5 @@ testResources/*.csv
 
 
 
-out/test/*.csv
+out/test/java-kanban/*.csv
 
