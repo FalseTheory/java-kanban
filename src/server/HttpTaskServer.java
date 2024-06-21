@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpServer;
+import handlers.*;
 import service.Managers;
 import service.TaskManager;
 
@@ -31,8 +32,17 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        //server.createContext("/tasks", );
+        try {
+            server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        server.createContext("/tasks", new TaskHandler(taskManager));
+        server.createContext("/epics", new EpicHandler());
+        server.createContext("/subtasks", new SubtasksHandler());
+        server.createContext("/history", new HistoryHandler(taskManager));
+        server.createContext("/prioritized", new PrioritizedHandler(taskManager));
+
 
     }
 
@@ -48,7 +58,7 @@ public class HttpTaskServer {
     }
 
 
-    static Gson getGson() {
+    public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new TypeAdapter<LocalDateTime>() {
             private static final DateTimeFormatter TASK_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yy:MM:dd;HH:mm");
@@ -77,5 +87,7 @@ public class HttpTaskServer {
         });
         return gsonBuilder.create();
     }
+
+
 }
 
