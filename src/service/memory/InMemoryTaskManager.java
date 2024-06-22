@@ -103,7 +103,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() != null && !isTaskValid(subtask)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
-        Epic epic = epics.get(subtask.getEpicId());
+        Epic epic = epics.getOrDefault(subtask.getEpicId(), null);
+        if (epic == null) {
+            throw new NotFoundException("Указаного в подзадача эпика не существует");
+        }
         epic.addTask(subtask);
         subtasks.put(subtask.getId(), subtask);
 
@@ -128,7 +131,10 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTask(Long id) {
         Task task = tasks.remove(id);
         historyManager.remove(id);
-        prioritizedTasks.remove(task);
+        if (task != null) {
+            prioritizedTasks.remove(task);
+        }
+
     }
 
     @Override

@@ -21,7 +21,7 @@ public class HttpTaskServer {
     public static final int PORT = 8080;
 
     private final HttpServer server;
-    private Gson gson;
+
 
     private final TaskManager taskManager;
 
@@ -32,12 +32,13 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
+
         try {
             server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        TaskManagerHandler taskManagerHandler = new TaskManagerHandler(taskManager);
+        TaskManagerHandler taskManagerHandler = new TaskManagerHandler(this.taskManager);
         server.createContext("/tasks", taskManagerHandler);
         server.createContext("/epics", taskManagerHandler);
         server.createContext("/subtasks", taskManagerHandler);
@@ -45,6 +46,11 @@ public class HttpTaskServer {
         server.createContext("/prioritized", taskManagerHandler);
 
 
+    }
+
+    public static void main(String[] args) {
+        HttpTaskServer taskServer = new HttpTaskServer();
+        taskServer.start();
     }
 
 
