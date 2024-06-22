@@ -45,7 +45,6 @@ public class HttpTaskServer {
         server.createContext("/history", taskManagerHandler);
         server.createContext("/prioritized", taskManagerHandler);
 
-
     }
 
     public static void main(String[] args) {

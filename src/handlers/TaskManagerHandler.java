@@ -65,7 +65,6 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         }
 
 
-
     }
 
     public void handleGetTaskById(HttpExchange httpExchange) {
@@ -208,12 +207,15 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
     private void handleEpics(HttpExchange httpExchange) throws IOException {
         switch (httpExchange.getRequestMethod()) {
             case "GET":
-                if (httpExchange.getRequestURI().getPath().split("/").length == 2) {
+                int length = httpExchange.getRequestURI().getPath().split("/").length;
+                if (length == 2) {
                     Map<Long, Epic> epicMap = manager.getEpics();
                     String response = gson.toJson(epicMap);
                     writeResponse(httpExchange, response, 200);
-                } else {
+                } else if (length == 3) {
                     handleGetEpicById(httpExchange);
+                } else if (length == 4) {
+                    handleGetEpicSubtasks(httpExchange);
                 }
                 break;
             case "POST":
@@ -285,7 +287,6 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         try (InputStream is = httpExchange.getRequestBody()) {
             String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             JsonElement jsonElement = JsonParser.parseString(body);
-            System.out.println(jsonElement);
             if (!jsonElement.isJsonObject()) {
                 writeResponse(httpExchange, "Bad Request", 400);
                 return;
@@ -309,7 +310,20 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
+    private void handleGetEpicSubtasks(HttpExchange httpExchange) {
+        try (httpExchange) {
+
+            long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+            List<Subtask> subs = manager.getEpic(id).get().getSubTasksList();
+            String response = gson.toJson(subs);
+            writeResponse(httpExchange, response, 200);
+        } catch (Exception e) {
+            errorHandler.handle(httpExchange, e);
+        }
+    }
 }
+
+
 
 
 
