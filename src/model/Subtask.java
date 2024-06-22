@@ -5,26 +5,26 @@ import java.time.LocalDateTime;
 
 public class Subtask extends Task {
 
-    private Epic epic;
+    private Long epicId;
 
-    public Subtask(String name, String description, Epic epic, TaskStatus status) {
+    public Subtask(String name, String description, Long epicId, TaskStatus status) {
         super(name, description, status);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, Epic epic, TaskStatus status, Duration duration, LocalDateTime startTime) {
+    public Subtask(String name, String description, Long epicId, TaskStatus status, Duration duration, LocalDateTime startTime) {
         super(name, description, status, duration, startTime);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, Epic epic, TaskStatus status, long id, Duration duration, LocalDateTime startTime) {
+    public Subtask(String name, String description, Long epicId, TaskStatus status, long id, Duration duration, LocalDateTime startTime) {
         super(name, description, status, id, duration, startTime);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, Epic epic, TaskStatus status, long id) {
+    public Subtask(String name, String description, Long epicId, TaskStatus status, long id) {
         super(name, description, status, id);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
     public Subtask(String name, String description, TaskStatus status, long id) {
@@ -39,7 +39,7 @@ public class Subtask extends Task {
                 ", description=" + super.getDescription() +
                 ", id=" + super.getId() +
                 ", status=" + super.getStatus() +
-                ", mainTaskId=" + epic.getId() +
+                ", mainTaskId=" + epicId +
                 ", duration=" + super.duration +
                 ", startTime=" + super.startTime +
                 '}';
@@ -51,13 +51,13 @@ public class Subtask extends Task {
         super.setStatus(status);
     }
 
-    public void setEpic(Epic epic) {
-        this.epic = epic;
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
     }
 
     @Override
-    public Epic getEpic() {
-        return epic;
+    public Long getEpicId() {
+        return epicId;
     }
 
     @Override

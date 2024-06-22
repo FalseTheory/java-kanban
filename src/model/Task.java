@@ -99,7 +99,7 @@ public class Task {
                 '}';
     }
 
-    public Epic getEpic() {
+    public Long getEpicId() {
         return null;
     }
 

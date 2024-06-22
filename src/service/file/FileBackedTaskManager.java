@@ -75,7 +75,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 long epicId = Long.parseLong(items[5]);
                 startTime = LocalDateTime.parse(items[6], TASK_DATE_TIME_FORMATTER);
                 duration = Duration.ofMinutes(Long.parseLong(items[7]));
-                return new Subtask(name, description, new Epic(null, null, epicId),
+                return new Subtask(name, description, epicId,
                         taskStatus, id, duration, startTime);
             default:
                 return null;
@@ -87,10 +87,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Long epicId;
         String startTime;
         Long durationInMinutes;
-        if (task.getEpic() == null) {
+        if (task.getEpicId() == null) {
             epicId = null;
         } else {
-            epicId = task.getEpic().getId();
+            epicId = task.getEpicId();
         }
         if (task.getStartTime() == null) {
             startTime = null;
@@ -261,10 +261,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             for (Subtask task : subtaskList) {
 
-                Optional<Epic> optEpic = newManager.getEpic(task.getEpic().getId());
+                Optional<Epic> optEpic = newManager.getEpic(task.getEpicId());
                 if (optEpic.isPresent()) {
                     Epic epic = optEpic.get();
-                    task.setEpic(epic);
+                    task.setEpicId(epic.getId());
                     epic.addTask(task);
                     newManager.subtasks.put(task.getId(), task);
                 }

@@ -45,7 +45,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
                 LocalDateTime.of(2015, 6, 7, 12, 30));
 
-        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, task.getId(), Duration.ofMinutes(100),
+        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(100),
                 LocalDateTime.of(2015, 6, 7, 12, 15));
 
         taskManager.createTask(task);
@@ -58,7 +58,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Task task = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(30),
                 LocalDateTime.of(2015, 6, 7, 12, 15));
 
-        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, task.getId(), Duration.ofMinutes(100),
+        Task task2 = new Task("Задача 1", "Описание", TaskStatus.NEW, Duration.ofMinutes(100),
                 LocalDateTime.of(2015, 6, 7, 12, 15));
 
         taskManager.createTask(task);
@@ -85,7 +85,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2013, 11, 12, 4, 5));
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", 2L, TaskStatus.NEW,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2014, 11, 12, 4, 5));
 
@@ -105,7 +105,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2013, 11, 12, 4, 5));
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", 2L, TaskStatus.NEW,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2017, 11, 12, 4, 5));
 
@@ -137,19 +137,20 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @DisplayName("Задачи должны корректно обновляться с сохранением id")
     public void shouldCorrectlyUpdateTasksOfAnyType() {
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+        taskManager.createEpic(epic1);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1.getId(), TaskStatus.NEW,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2013, 11, 12, 4, 5));
         Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2013, 9, 12, 4, 5));
 
-        taskManager.createEpic(epic1);
+
         taskManager.createSubTask(subtask1);
         taskManager.createTask(task1);
 
         Epic epicUpdate = new Epic("Эпик", "Описание эпик", epic1.getId());
-        Subtask subtaskUpdate = new Subtask("Подзадача", "Описание саб", epic1, TaskStatus.IN_PROGRESS,
+        Subtask subtaskUpdate = new Subtask("Подзадача", "Описание саб", epic1.getId(), TaskStatus.IN_PROGRESS,
                 subtask1.getId(),
                 subtask1.getDuration(),
                 subtask1.getStartTime());
@@ -187,10 +188,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic1);
         assertEquals(epic1.getStatus(), TaskStatus.NEW);
 
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1,
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1.getId(),
                 TaskStatus.NEW, Duration.ofMinutes(30),
                 LocalDateTime.of(2014, 12, 12, 12, 12));
-        Subtask subtask2 = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.IN_PROGRESS,
+        Subtask subtask2 = new Subtask("Подзадача 3", "Описание", epic1.getId(), TaskStatus.IN_PROGRESS,
                 Duration.ofMinutes(33),
                 LocalDateTime.of(2015, 11, 11, 6, 4));
 
@@ -198,11 +199,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createSubTask(subtask2);
         assertEquals(epic1.getStatus(), TaskStatus.IN_PROGRESS);
 
-        Subtask subtask1_change = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.DONE,
+        Subtask subtask1_change = new Subtask("Подзадача 1", "Описание", epic1.getId(), TaskStatus.DONE,
                 subtask1.getId(),
                 subtask1.getDuration(),
                 subtask1.getStartTime());
-        Subtask subtask2_change = new Subtask("Подзадача 3", "Описание", epic1, TaskStatus.DONE,
+        Subtask subtask2_change = new Subtask("Подзадача 3", "Описание", epic1.getId(), TaskStatus.DONE,
                 subtask2.getId(),
                 subtask2.getDuration(),
                 subtask2.getStartTime());
@@ -220,7 +221,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @DisplayName("История должна записываться при обращению к любому виду задач")
     public void shouldRecordHistoryForTaskOfAnyType() {
         Epic epic1 = new Epic("Эпик 1", "Описание");
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", epic1, TaskStatus.NEW,
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание", 1L, TaskStatus.NEW,
                 Duration.ofMinutes(3)
                 , LocalDateTime.of(2013, 11, 12, 4, 5));
         Task task1 = new Task("Задача 1", "Описание", TaskStatus.NEW,

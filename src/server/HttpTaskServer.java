@@ -6,7 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpServer;
-import handlers.*;
+import handlers.TaskManagerHandler;
 import service.Managers;
 import service.TaskManager;
 
@@ -37,11 +37,12 @@ public class HttpTaskServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        server.createContext("/tasks", new TaskHandler(taskManager));
-        server.createContext("/epics", new EpicHandler());
-        server.createContext("/subtasks", new SubtasksHandler());
-        server.createContext("/history", new HistoryHandler(taskManager));
-        server.createContext("/prioritized", new PrioritizedHandler(taskManager));
+        TaskManagerHandler taskManagerHandler = new TaskManagerHandler(taskManager);
+        server.createContext("/tasks", taskManagerHandler);
+        server.createContext("/epics", taskManagerHandler);
+        server.createContext("/subtasks", taskManagerHandler);
+        server.createContext("/history", taskManagerHandler);
+        server.createContext("/prioritized", taskManagerHandler);
 
 
     }
@@ -60,11 +61,16 @@ public class HttpTaskServer {
 
     public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.serializeNulls();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new TypeAdapter<LocalDateTime>() {
             private static final DateTimeFormatter TASK_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yy:MM:dd;HH:mm");
 
             @Override
             public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
+                if (localDateTime == null) {
+                    jsonWriter.nullValue();
+                    return;
+                }
                 jsonWriter.value(localDateTime.format(TASK_DATE_TIME_FORMATTER));
             }
 
@@ -77,6 +83,10 @@ public class HttpTaskServer {
 
             @Override
             public void write(final JsonWriter jsonWriter, final Duration duration) throws IOException {
+                if (duration == null) {
+                    jsonWriter.nullValue();
+                    return;
+                }
                 jsonWriter.value(duration.toMinutes());
             }
 
