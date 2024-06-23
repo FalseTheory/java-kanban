@@ -60,6 +60,7 @@ public class ErrorHandler extends BaseHttpHandler {
 
         } catch (Exception unexpected) {
             unexpected.printStackTrace();
+
         }
     }
 }

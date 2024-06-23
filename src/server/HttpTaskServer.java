@@ -38,7 +38,7 @@ public class HttpTaskServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        TaskManagerHandler taskManagerHandler = new TaskManagerHandler(this.taskManager);
+        TaskManagerHandler taskManagerHandler = new TaskManagerHandler(this.taskManager, getGson());
         server.createContext("/tasks", taskManagerHandler);
         server.createContext("/epics", taskManagerHandler);
         server.createContext("/subtasks", taskManagerHandler);

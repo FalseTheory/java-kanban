@@ -12,7 +12,6 @@ import exception.ValidationException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-import server.HttpTaskServer;
 import service.TaskManager;
 
 import java.io.IOException;
@@ -27,9 +26,9 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
     private final Gson gson;
     private final ErrorHandler errorHandler;
 
-    public TaskManagerHandler(TaskManager manager) {
+    public TaskManagerHandler(TaskManager manager, Gson gson) {
         this.manager = manager;
-        gson = HttpTaskServer.getGson();
+        this.gson = gson;
         errorHandler = new ErrorHandler(gson);
     }
 
@@ -67,7 +66,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    public void handleGetTaskById(HttpExchange httpExchange) {
+    private void handleGetTaskById(HttpExchange httpExchange) {
         try (httpExchange) {
             long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
             Optional<Task> optTask = manager.getTask(id);
@@ -84,7 +83,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    public void handleGetEpicById(HttpExchange httpExchange) {
+    private void handleGetEpicById(HttpExchange httpExchange) {
         try (httpExchange) {
             long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
             Optional<Epic> optEpic = manager.getEpic(id);
@@ -102,7 +101,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    public void handleGetSubtaskById(HttpExchange httpExchange) {
+    private void handleGetSubtaskById(HttpExchange httpExchange) {
         try (httpExchange) {
             long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
             Optional<Subtask> optSub = manager.getSubTask(id);
@@ -121,7 +120,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
     }
 
 
-    public void handlePostTasks(HttpExchange httpExchange) {
+    private void handlePostTasks(HttpExchange httpExchange) {
         try (InputStream is = httpExchange.getRequestBody()) {
             String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             Task task = gson.fromJson(body, Task.class);
@@ -148,10 +147,9 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    public void handlePrioritizedTasks(HttpExchange httpExchange) {
+    private void handlePrioritizedTasks(HttpExchange httpExchange) {
         try (httpExchange) {
             if (httpExchange.getRequestMethod().equals("GET")) {
-                Gson gson = HttpTaskServer.getGson();
                 List<Task> prioritized = manager.getPrioritizedTasks();
                 String response = gson.toJson(prioritized);
                 writeResponse(httpExchange, response, 200);
@@ -163,10 +161,9 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    public void handleHistory(HttpExchange httpExchange) {
+    private void handleHistory(HttpExchange httpExchange) {
         try (httpExchange) {
             if (httpExchange.getRequestMethod().equals("GET")) {
-                Gson gson = HttpTaskServer.getGson();
                 List<Task> history = manager.getHistory();
                 String response = gson.toJson(history);
                 writeResponse(httpExchange, response, 200);
@@ -262,10 +259,8 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
                 try {
                     manager.createSubTask(subtask);
                     writeResponse(httpExchange, "Создана подзадача с id=" + subtask.getId(), 201);
-                } catch (ValidationException e) {
-                    writeResponse(httpExchange, "Подзадача пересекается с существующими", 406);
-                } catch (NotFoundException e) {
-                    writeResponse(httpExchange, e.getMessage(), 404);
+                } catch (ValidationException | NotFoundException e) {
+                    errorHandler.handle(httpExchange, e);
                 }
 
             } else {
@@ -279,7 +274,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            errorHandler.handle(httpExchange, e);
         }
     }
 
@@ -288,10 +283,8 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
             String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             JsonElement jsonElement = JsonParser.parseString(body);
             if (!jsonElement.isJsonObject()) {
-                writeResponse(httpExchange, "Bad Request", 400);
-                return;
+                throw new BadRequestException("Bad request");
             }
-
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             String name = jsonObject.get("name").getAsString();
             String description = jsonObject.get("description").getAsString();
@@ -301,7 +294,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
                 manager.createEpic(epic);
                 writeResponse(httpExchange, "Создан эпик с id=" + epic.getId(), 201);
             } catch (NotFoundException e) {
-                writeResponse(httpExchange, e.getMessage(), 404);
+                errorHandler.handle(httpExchange, e);
             }
 
         } catch (IOException e) {
@@ -314,7 +307,11 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         try (httpExchange) {
 
             long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
-            List<Subtask> subs = manager.getEpic(id).get().getSubTasksList();
+            Optional<Epic> optEpic = manager.getEpic(id);
+            if (optEpic.isEmpty()) {
+                throw new NotFoundException("Эпик по id=" + id + " не найден");
+            }
+            List<Subtask> subs = optEpic.get().getSubTasksList();
             String response = gson.toJson(subs);
             writeResponse(httpExchange, response, 200);
         } catch (Exception e) {
