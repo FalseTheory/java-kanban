@@ -66,56 +66,46 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    private void handleGetTaskById(HttpExchange httpExchange) {
-        try (httpExchange) {
-            long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
-            Optional<Task> optTask = manager.getTask(id);
-            try {
-                if (optTask.isEmpty()) {
-                    throw new NotFoundException("Такой подзадачи не существует");
-                } else {
-                    writeResponse(httpExchange, gson.toJson(optTask.get()), 200);
-                }
-            } catch (Exception e) {
-                errorHandler.handle(httpExchange, e);
-            }
+    private void handleGetTaskById(HttpExchange httpExchange) throws IOException {
+        long id;
+        try {
+            id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+        } catch (NumberFormatException e) {
+            errorHandler.handle(httpExchange, new BadRequestException("Неправильный запрос"));
+            return;
         }
+        Optional<Task> optTask = manager.getTask(id);
+        if (optTask.isEmpty()) {
+            errorHandler.handle(httpExchange, new NotFoundException("Такой подзадачи не существует"));
+        } else {
+            writeResponse(httpExchange, gson.toJson(optTask.get()), 200);
+        }
+
 
     }
 
-    private void handleGetEpicById(HttpExchange httpExchange) {
-        try (httpExchange) {
-            long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
-            Optional<Epic> optEpic = manager.getEpic(id);
-            try {
-                if (optEpic.isEmpty()) {
-                    throw new NotFoundException("Такого эпика не существует");
-                } else {
-                    writeResponse(httpExchange, gson.toJson(optEpic.get()), 200);
-                }
-            } catch (Exception e) {
-                errorHandler.handle(httpExchange, e);
-            }
-
+    private void handleGetEpicById(HttpExchange httpExchange) throws IOException {
+        long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+        Optional<Epic> optEpic = manager.getEpic(id);
+        if (optEpic.isEmpty()) {
+            errorHandler.handle(httpExchange, new NotFoundException("Такого эпика не существует"));
+        } else {
+            writeResponse(httpExchange, gson.toJson(optEpic.get()), 200);
         }
+
 
     }
 
-    private void handleGetSubtaskById(HttpExchange httpExchange) {
-        try (httpExchange) {
-            long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
-            Optional<Subtask> optSub = manager.getSubTask(id);
-            try {
-                if (optSub.isEmpty()) {
-                    throw new NotFoundException("Такой подзадачи не существует");
-                } else {
-                    writeResponse(httpExchange, gson.toJson(optSub.get()), 200);
-                }
-            } catch (Exception e) {
-                errorHandler.handle(httpExchange, e);
-            }
+    private void handleGetSubtaskById(HttpExchange httpExchange) throws IOException {
 
+        long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+        Optional<Subtask> optSub = manager.getSubTask(id);
+        if (optSub.isEmpty()) {
+            errorHandler.handle(httpExchange, new NotFoundException("Такой подзадачи не существует"));
+        } else {
+            writeResponse(httpExchange, gson.toJson(optSub.get()), 200);
         }
+
 
     }
 
@@ -147,36 +137,30 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handlePrioritizedTasks(HttpExchange httpExchange) {
-        try (httpExchange) {
-            if (httpExchange.getRequestMethod().equals("GET")) {
-                List<Task> prioritized = manager.getPrioritizedTasks();
-                String response = gson.toJson(prioritized);
-                writeResponse(httpExchange, response, 200);
-            } else {
-                throw new BadRequestException("Неправильный запрос");
-            }
-        } catch (Exception e) {
-            errorHandler.handle(httpExchange, e);
-        }
-    }
-
-    private void handleHistory(HttpExchange httpExchange) {
-        try (httpExchange) {
-            if (httpExchange.getRequestMethod().equals("GET")) {
-                List<Task> history = manager.getHistory();
-                String response = gson.toJson(history);
-                writeResponse(httpExchange, response, 200);
-            } else {
-                throw new BadRequestException("Неправильный запрос");
-            }
-        } catch (Exception e) {
-            errorHandler.handle(httpExchange, e);
+    private void handlePrioritizedTasks(HttpExchange httpExchange) throws IOException {
+        if (httpExchange.getRequestMethod().equals("GET")) {
+            List<Task> prioritized = manager.getPrioritizedTasks();
+            String response = gson.toJson(prioritized);
+            writeResponse(httpExchange, response, 200);
+        } else {
+            throw new BadRequestException("Неправильный запрос");
         }
 
     }
 
-    private void handleTasks(HttpExchange httpExchange) throws IOException {
+    private void handleHistory(HttpExchange httpExchange) throws IOException {
+
+        if (httpExchange.getRequestMethod().equals("GET")) {
+            List<Task> history = manager.getHistory();
+            String response = gson.toJson(history);
+            writeResponse(httpExchange, response, 200);
+        } else {
+            throw new BadRequestException("Неправильный запрос");
+        }
+
+    }
+
+    private void handleTasks(HttpExchange httpExchange) throws IOException, NumberFormatException {
         switch (httpExchange.getRequestMethod()) {
             case "GET":
                 if (httpExchange.getRequestURI().getPath().split("/").length == 2) {
@@ -224,7 +208,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
                 writeResponse(httpExchange, "", 204);
                 break;
             default:
-                throw new BadRequestException("Неправильный запрос");
+                errorHandler.handle(httpExchange, new BadRequestException("Неправильный запрос"));
         }
     }
 
@@ -246,7 +230,7 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
                 writeResponse(httpExchange, "", 204);
                 break;
             default:
-                throw new BadRequestException("Неправильный запрос");
+                errorHandler.handle(httpExchange, new BadRequestException("Неправильный запрос"));
 
         }
     }
@@ -303,20 +287,19 @@ public class TaskManagerHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    private void handleGetEpicSubtasks(HttpExchange httpExchange) {
-        try (httpExchange) {
+    private void handleGetEpicSubtasks(HttpExchange httpExchange) throws IOException {
 
-            long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
-            Optional<Epic> optEpic = manager.getEpic(id);
-            if (optEpic.isEmpty()) {
-                throw new NotFoundException("Эпик по id=" + id + " не найден");
-            }
+        long id = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+        Optional<Epic> optEpic = manager.getEpic(id);
+        if (optEpic.isEmpty()) {
+            errorHandler.handle(httpExchange, new NotFoundException("Эпик по id=" + id + " не найден"));
+        } else {
             List<Subtask> subs = optEpic.get().getSubTasksList();
             String response = gson.toJson(subs);
             writeResponse(httpExchange, response, 200);
-        } catch (Exception e) {
-            errorHandler.handle(httpExchange, e);
         }
+
+
     }
 }
 
