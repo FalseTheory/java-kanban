@@ -220,7 +220,12 @@ public class HttpTaskServerTest {
     public void shouldCreateEpic() throws IOException, InterruptedException {
         Epic expectedEpic = new Epic("Epic", "Description");
         URI url = URI.create("http://localhost:8080/epics");
-        String body = gson.toJson(expectedEpic);
+        String body = "{\n" +
+                "\t\t\"name\": \"Epic\",\n" +
+                "\t\t\"description\": \"description\",\n" +
+                "\t\t\"subTasksList\": []\n" +
+                "\t}";
+
 
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8)).build();
 
@@ -356,12 +361,49 @@ public class HttpTaskServerTest {
     @Test
     public void badRequestShouldBeCorrectlyHandled() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/somePath");
+        URI url2 = URI.create("http://localhost:8080/tasks/hello/world");
 
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        HttpRequest request2 = HttpRequest.newBuilder().uri(url2).GET().build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(404, response.statusCode());
+        assertEquals(404, response2.statusCode());
+    }
+
+    @DisplayName("Неправильный метод запроса должен выдавать ошибку 405")
+    @Test
+    public void shouldReturnMethodNotAllowedtOnWrongRequestMethod() throws IOException, InterruptedException {
+        URI url = URI.create("http://localhost:8080/tasks");
+
+        HttpRequest request = HttpRequest.newBuilder().uri(url).PUT(HttpRequest.BodyPublishers.ofString("Test")).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(404, response.statusCode());
+        assertEquals(405, response.statusCode());
+
+    }
+
+    @DisplayName("Неправильный формат id в запросе должен выдавать ошибку 400")
+    @Test
+    public void shouldReturnBadRequestOnWrongNumberFormat() throws IOException, InterruptedException {
+        URI urlTask = URI.create("http://localhost:8080/tasks/1L");
+        URI urlSub = URI.create("http://localhost:8080/subtasks/hello");
+        URI urlEpic = URI.create("http://localhost:8080/epics/0.4214211");
+
+        HttpRequest requestTask = HttpRequest.newBuilder().uri(urlTask).GET().build();
+        HttpRequest requestSub = HttpRequest.newBuilder().uri(urlSub).GET().build();
+        HttpRequest requestEpic = HttpRequest.newBuilder().uri(urlEpic).GET().build();
+
+        HttpResponse<String> responseTask = client.send(requestTask, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseSub = client.send(requestSub, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseEpic = client.send(requestEpic, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(400, responseTask.statusCode());
+        assertEquals(400, responseSub.statusCode());
+        assertEquals(400, responseEpic.statusCode());
     }
 
 }
