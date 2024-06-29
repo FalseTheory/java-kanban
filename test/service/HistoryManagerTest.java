@@ -6,13 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DisplayName("Менеджер истории")
@@ -30,7 +29,7 @@ public class HistoryManagerTest {
     public void shouldCorrectlyRecordHistory() {
 
         assertTrue(historyManager.getHistory().isEmpty(), "История должна быть пустой при инициализации");
-        historyManager.add(new Task("Задача", "Описание", TaskStatus.NEW));
+        historyManager.add(new Task("Задача", "Описание", TaskStatus.NEW, 1L));
 
         assertEquals(1, historyManager.getHistory().size(), "Размер истории не соответствует ожидаемому");
 

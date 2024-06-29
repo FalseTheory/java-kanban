@@ -8,7 +8,7 @@ public class Task {
 
     private String name;
     private String description;
-    private long id;
+    private Long id;
     private TaskStatus status;
     protected Duration duration;
     protected LocalDateTime startTime;
@@ -56,7 +56,7 @@ public class Task {
         this.status = status;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -99,7 +99,7 @@ public class Task {
                 '}';
     }
 
-    public Epic getEpic() {
+    public Long getEpicId() {
         return null;
     }
 

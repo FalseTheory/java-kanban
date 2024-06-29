@@ -103,11 +103,15 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() != null && !isTaskValid(subtask)) {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
-        subtask.getEpic().addTask(subtask);
+        Epic epic = epics.getOrDefault(subtask.getEpicId(), null);
+        if (epic == null) {
+            throw new NotFoundException("Указаного в подзадача эпика не существует");
+        }
+        epic.addTask(subtask);
         subtasks.put(subtask.getId(), subtask);
 
         prioritizedTasks.add(subtask);
-        calculateStatus(subtask.getEpic());
+        calculateStatus(epic);
 
         return subtask;
     }
@@ -125,19 +129,24 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTask(Long id) {
-        tasks.remove(id);
+        Task task = tasks.remove(id);
         historyManager.remove(id);
+        if (task != null) {
+            prioritizedTasks.remove(task);
+        }
+
     }
 
     @Override
     public void removeSubTask(Long id) {
         Subtask tempTask = subtasks.remove(id);
-        Epic tempEpic = tempTask.getEpic();
+        Epic tempEpic = epics.get(tempTask.getEpicId());
         if (tempEpic != null) {
             tempEpic.removeTask(tempTask);
             calculateStatus(tempEpic);
         }
         historyManager.remove(id);
+        prioritizedTasks.remove(tempTask);
 
     }
 
@@ -147,8 +156,10 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask subtask : tempEpic.getSubTasksList()) {
             subtasks.remove(subtask.getId());
             historyManager.remove(subtask.getId());
+            prioritizedTasks.remove(subtask);
         }
         historyManager.remove(id);
+
     }
 
     @Override
@@ -173,7 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new ValidationException("Задача пересекается с другой задачей");
         }
         if (subtasks.containsKey(subtask.getId())) {
-            Epic tempEpic = subtask.getEpic();
+            Epic tempEpic = epics.get(subtask.getEpicId());
             if (epics.get(tempEpic.getId()) == null) {
                 throw new NotFoundException("Не найден эпик по id: " + tempEpic.getId());
             }
@@ -185,7 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
             updatedSubtask.setDuration(subtask.getDuration());
 
 
-            calculateStatus(updatedSubtask.getEpic());
+            calculateStatus(tempEpic);
         }
 
     }
@@ -204,6 +215,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Subtask> getSubtasksForEpic(Long id) {
+
         Epic epic = epics.get(id);
         if (epic == null) {
             return null;

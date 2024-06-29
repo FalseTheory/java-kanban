@@ -47,7 +47,7 @@ public class TaskTest {
     @DisplayName("Эпик должен хранить в себе список своих подзадач")
     public void epicMustContainListOfHisSubtasks() {
         Epic epic1 = new Epic("Test", "Description", 1L);
-        Subtask subtask = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 2L);
+        Subtask subtask = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 2L);
 
         assertTrue(epic1.getSubTasksList().isEmpty());
 
@@ -66,14 +66,14 @@ public class TaskTest {
 
         assertNull(epic1.getDuration(),"Длительность не должна быть задана при инициализации");
 
-        Subtask subtask = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 2L,
+        Subtask subtask = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 2L,
                 Duration.ofMinutes(30),
                 LocalDateTime.of(2012, 11, 11, 4, 5));
 
         epic1.addTask(subtask);
         assertEquals(subtask.getDuration(), epic1.getDuration(), "Длительность вычисляется неправильно при добавлении первой задачи");
 
-        Subtask subtask1 = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 3L,
+        Subtask subtask1 = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 3L,
                 Duration.ofMinutes(60),
                 LocalDateTime.of(2013, 11, 11, 4, 5));
 
@@ -94,7 +94,7 @@ public class TaskTest {
         assertNull(epic1.getStartTime(),"Эпик неправильно инициализируется");
         assertNull(epic1.getEndTime(),"Эпик неправильно инициализируется");
 
-        Subtask subtask = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 2L,
+        Subtask subtask = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 2L,
                 Duration.ofMinutes(30),
                 LocalDateTime.of(2012, 11, 11, 4, 5));
 
@@ -108,15 +108,15 @@ public class TaskTest {
     @DisplayName("Время начала и окончания эпика корректно рассчитывается при нескольких подзадачах")
     public void shoudlCorrectlyCalculateEpicStartAndEndTimeWithManySubtasks(){
         Epic epic1 = new Epic("Test", "Description", 1L);
-        Subtask subtask = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 2L,
+        Subtask subtask = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 2L,
                 Duration.ofMinutes(30),
                 LocalDateTime.of(2012, 11, 11, 4, 5));
 
-        Subtask subtask1 = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 3L,
+        Subtask subtask1 = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 3L,
                 Duration.ofMinutes(30),
                 LocalDateTime.of(2014, 11, 11, 4, 5));
 
-        Subtask subtask2 = new Subtask("Test name", "test Desc", epic1, TaskStatus.NEW, 4L,
+        Subtask subtask2 = new Subtask("Test name", "test Desc", 1L, TaskStatus.NEW, 4L,
                 Duration.ofMinutes(60),
                 LocalDateTime.of(2010, 11, 11, 4, 5));
 

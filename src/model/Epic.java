@@ -44,10 +44,13 @@ public class Epic extends Task {
                 ", subTasksList=" + subTasksList +
                 ", duration=" + super.duration +
                 ", startTime=" + super.startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 
     public List<Subtask> getSubTasksList() {
+
+
         return subTasksList;
     }
 
