@@ -25,9 +25,6 @@ hs_err_pid*
 #idea
 .idea
 
-#changing test Files
-testResources/*.csv
-
 
 
 out/test/java-kanban/*.csv
